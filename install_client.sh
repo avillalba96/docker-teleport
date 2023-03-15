@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Instalamos teleport
-curl https://goteleport.com/static/install.sh | bash 12.1.1
+curl https://goteleport.com/static/install.sh | bash -s 12.1.1
 
 # Verificamos si se instaló correctamente Teleport
 if ! command -v teleport &>/dev/null; then
@@ -96,4 +96,4 @@ EOF1
   systemctl daemon-reload
 fi
 
-rm "$0"
+rm install_client.sh

@@ -58,7 +58,7 @@ docker exec teleport tctl nodes add --ttl=1h
 *. Ejecutar el script y completar con la informacion que se solicita:
 
 ```bash
-curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh
+wget -qO- https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh | bash
 ```
 
 ### **Agregar al Cluster**
