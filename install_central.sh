@@ -12,4 +12,3 @@ sed -i '/    period: 1m0s/a \  - name: so\n    command: ["/usr/bin/lsb_release",
 
 systemctl stop teleport.service; sleep 3; systemctl start teleport.service; systemctl daemon-reload
 
-rm install_central.sh

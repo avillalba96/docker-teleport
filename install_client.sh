@@ -67,17 +67,18 @@ proxy_service:
   acme: {}
 EOF1
 
-  # Obtener el nombre del host
+  # Obtenemos variables
   HOST="$(hostname)"
-
-  # Obtener la dirección IP del host en la interfaz vpn-ssp
   IP_PARACONECTAR=$(ip a s $(ip r | grep default | awk '{print $5}') | awk '/inet / {print $2}' | awk -F[/] '{print $1}')
-
-  # Pedir al usuario que ingrese el valor para ID_TOKEN, CA_TOKEN y SERVER
-  read -p "Ingrese el valor para SERVER: " SERVER
-  #SERVER="x.x.x.x"
-  read -p "Ingrese el valor para ID_TOKEN: " ID_TOKEN
-  read -p "Ingrese el valor para CA_TOKEN: " CA_TOKEN
+  if [[ -z "${SERVER}" ]]; then
+    read -p "Ingrese el valor para SERVER: " SERVER
+  fi
+  if [[ -z "${ID_TOKEN}" ]]; then
+    read -p "Ingrese el valor para ID_TOKEN: " ID_TOKEN
+  fi
+  if [[ -z "${CA_TOKEN}" ]]; then
+    read -p "Ingrese el valor para CA_TOKEN: " CA_TOKEN
+  fi
 
   # Editar el archivo de configuración de Teleport
   sed -i 's/HOST/'"$HOST"'/g' /etc/teleport.yaml
@@ -92,5 +93,3 @@ EOF1
   systemctl start teleport.service
   systemctl daemon-reload
 fi
-
-rm install_client.sh
