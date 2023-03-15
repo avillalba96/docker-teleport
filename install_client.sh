@@ -1,14 +1,32 @@
 #!/bin/bash
 
 # Instalamos teleport
-curl https://goteleport.com/static/install.sh | bash "$1"
+curl https://goteleport.com/static/install.sh | bash 12.1.1
 
-# Instalamos lsb-release si no están instalados
-if ! command -v lsb_release &> /dev/null; then
+# Verificamos si se instaló correctamente Teleport
+if ! command -v teleport &>/dev/null; then
+  echo ""
+  echo "Teleport no se instaló correctamente."
+  echo "Ejecutando comandos para eliminar la instalación anterior..."
+  echo ""
+  systemctl stop teleport.service
+  pkill -f teleport
+  rm -rf /var/lib/teleport
+  rm -f /etc/teleport.yaml
+  rm -f /usr/local/bin/teleport /usr/local/bin/tctl /usr/local/bin/tsh
+  apt-get remove teleport -y
+  apt-get purge teleport -y
+  apt-get autoremove -y
+  apt-get autoclean -y
+  systemctl daemon-reload
+  echo ""
+else
+  # Instalamos lsb-release si no están instalados
+  if ! command -v lsb_release &>/dev/null; then
     apt-get install lsb-release -y
-fi
+  fi
 
-cat <<EOF1 > /etc/teleport.yaml
+  cat <<EOF1 >/etc/teleport.yaml
 version: v3
 teleport:
   nodename: "HOST"
@@ -52,40 +70,30 @@ proxy_service:
   acme: {}
 EOF1
 
-# Obtener el nombre del host
-HOST="$(hostname)"
+  # Obtener el nombre del host
+  HOST="$(hostname)"
 
-# Obtener la dirección IP del host en la interfaz vpn-ssp
-IP_PARACONECTAR=$(ip a s $(ip r | grep default | awk '{print $5}') | awk '/inet / {print $2}' | awk -F[/] '{print $1}')
+  # Obtener la dirección IP del host en la interfaz vpn-ssp
+  IP_PARACONECTAR=$(ip a s $(ip r | grep default | awk '{print $5}') | awk '/inet / {print $2}' | awk -F[/] '{print $1}')
 
-# Pedir al usuario que ingrese el valor para ID_TOKEN, CA_TOKEN y SERVER
-read -p "Ingrese el valor para SERVER: " SERVER
-#SERVER="x.x.x.x"
-read -p "Ingrese el valor para ID_TOKEN: " ID_TOKEN
-read -p "Ingrese el valor para CA_TOKEN: " CA_TOKEN
+  # Pedir al usuario que ingrese el valor para ID_TOKEN, CA_TOKEN y SERVER
+  read -p "Ingrese el valor para SERVER: " SERVER
+  #SERVER="x.x.x.x"
+  read -p "Ingrese el valor para ID_TOKEN: " ID_TOKEN
+  read -p "Ingrese el valor para CA_TOKEN: " CA_TOKEN
 
-# Editar el archivo de configuración de Teleport
-sed -i 's/HOST/'"$HOST"'/g' /etc/teleport.yaml
-sed -i 's/IP_PARACONECTAR/'"$IP_PARACONECTAR"'/g' /etc/teleport.yaml
-sed -i 's/ID_TOKEN/'"$ID_TOKEN"'/g' /etc/teleport.yaml
-sed -i 's/CA_TOKEN/'"$CA_TOKEN"'/g' /etc/teleport.yaml
-sed -i 's/SERVER/'"$SERVER"'/g' /etc/teleport.yaml
+  # Editar el archivo de configuración de Teleport
+  sed -i 's/HOST/'"$HOST"'/g' /etc/teleport.yaml
+  sed -i 's/IP_PARACONECTAR/'"$IP_PARACONECTAR"'/g' /etc/teleport.yaml
+  sed -i 's/ID_TOKEN/'"$ID_TOKEN"'/g' /etc/teleport.yaml
+  sed -i 's/CA_TOKEN/'"$CA_TOKEN"'/g' /etc/teleport.yaml
+  sed -i 's/SERVER/'"$SERVER"'/g' /etc/teleport.yaml
 
-systemctl enable teleport.service; systemctl stop teleport.service; sleep 3; systemctl start teleport.service; systemctl daemon-reload
-
-# Verificamos si se instaló correctamente Teleport
-if ! command -v teleport &> /dev/null; then
-    clear
-    echo "Teleport no se instaló correctamente."
-    echo "Ejecutando comandos para eliminar la instalación anterior..."
-    echo ""
-    echo ""
-    systemctl stop teleport.service; pkill -f teleport; rm -rf /var/lib/teleport; rm -f /etc/teleport.yaml; rm -f /usr/local/bin/teleport /usr/local/bin/tctl /usr/local/bin/tsh; apt-get remove teleport -y; apt-get purge teleport -y; apt-get autoremove -y; apt-get autoclean -y; systemctl daemon-reload;
-    echo ""
-else
-    echo ""
-    echo ""
-    echo "Teleport se instaló correctamente."
+  systemctl enable teleport.service
+  systemctl stop teleport.service
+  sleep 3
+  systemctl start teleport.service
+  systemctl daemon-reload
 fi
 
 rm "$0"
