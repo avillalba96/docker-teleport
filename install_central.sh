@@ -1,7 +1,9 @@
 #!/bin/bash
 
-# Instalando paquete necesario
-apt-get install curl lsb-release -y;
+# Instalamos lsb-release si no están instalados
+if ! command -v lsb_release &> /dev/null; then
+    apt-get install lsb-release -y
+fi
 
 # Editando las lineas necesarias
 sed -i '/diag_addr: ""/a \  connection_limits:\n    max_connections: 3\n    max_users: 3' /etc/teleport.yaml

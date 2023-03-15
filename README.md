@@ -44,7 +44,7 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --logi
 *. Al tener la conexion establecidas, hacemos uan ediciones extras para nuestro nodo:
 
 ```bash
-wget asd/install_central.sh
+curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_central.sh | bash
 ```
 
 #### **Nodos contra un TELEPORT-CLIENT**
@@ -58,13 +58,7 @@ docker exec teleport tctl nodes add --ttl=1h
 *. Ejecutar el script y completar con la informacion que se solicita:
 
 ```bash
-wget asd/install_client.sh
-```
-
-### **Eliminar teleport sobre el nodo**
-
-```bash
-systemctl stop teleport.service; pkill -f teleport; rm -rf /var/lib/teleport; rm -f /etc/teleport.yaml; rm -f /usr/local/bin/teleport /usr/local/bin/tctl /usr/local/bin/tsh; apt-get remove teleport -y; apt-get purge teleport -y; apt-get autoremove -y; apt-get autoclean -y; systemctl daemon-reload;
+curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh | bash -s 12.1.1
 ```
 
 ### **Agregar al Cluster**

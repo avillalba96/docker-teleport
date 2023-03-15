@@ -1,8 +1,12 @@
 #!/bin/bash
 
+# Instalamos lsb-release si no están instalados
+if ! command -v lsb_release &> /dev/null; then
+    apt-get install lsb-release -y
+fi
+
 # Instalamos teleport
-apt-get install curl lsb-release -y
-curl https://goteleport.com/static/install.sh | bash -s 12.1.1
+curl https://goteleport.com/static/install.sh | bash $1
 
 cat <<EOF1 > /etc/teleport.yaml
 version: v3
@@ -68,5 +72,14 @@ sed -i 's/CA_TOKEN/'"$CA_TOKEN"'/g' /etc/teleport.yaml
 sed -i 's/SERVER/'"$SERVER"'/g' /etc/teleport.yaml
 
 systemctl enable teleport.service; systemctl stop teleport.service; sleep 3; systemctl start teleport.service; systemctl daemon-reload
+
+# Verificamos si se instaló correctamente Teleport
+if ! command -v teleport &> /dev/null; then
+    echo "Teleport no se instaló correctamente."
+    echo "Ejecutando comandos para eliminar la instalación anterior..."
+    systemctl stop teleport.service; pkill -f teleport; rm -rf /var/lib/teleport; rm -f /etc/teleport.yaml; rm -f /usr/local/bin/teleport /usr/local/bin/tctl /usr/local/bin/tsh; apt-get remove teleport -y; apt-get purge teleport -y; apt-get autoremove -y; apt-get autoclean -y; systemctl daemon-reload;
+else
+    echo "Teleport se instaló correctamente."
+fi
 
 rm "$0"
