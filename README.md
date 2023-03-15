@@ -27,7 +27,7 @@ prepare_docker.sh
 
 * En caso de armar un Teleport-HUB se requiere usar SSL:
 
-1. Configurar en nginx para que el puerto 443 redireccione contra el 3080 del docker y usar certificado SSL ya que es OBLIGATORIO para el uso de proxy, ademas tener la opcion "Websockets Support" habilitada.
+1. Configurar en nginx para que el puerto 443 redireccione contra el 3080 del docker, es OBLIGATORIO el uso de certificado TLS(CA+CHAIN+KEY) incluso tener la opcion "Websockets Support" habilitada.
 2. Todos los demas puertos expuestos en docker tienen que ser accesible por NAT directamente contra el docker
 
 * Generar usuario
@@ -58,6 +58,7 @@ docker exec teleport tctl nodes add --ttl=1h
 *. Ejecutar el script y completar con la informacion que se solicita:
 
 ```bash
+#https://goteleport.com/download/
 curl https://goteleport.com/static/install.sh | bash -s 12.1.1
 curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh && chmod +x install_client.sh && ./install_client.sh
 ```
