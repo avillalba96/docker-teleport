@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Instalamos teleport
-curl https://goteleport.com/static/install.sh | bash -s 12.1.1
-
 # Verificamos si se instaló correctamente Teleport
 if ! command -v teleport &>/dev/null; then
   echo ""
