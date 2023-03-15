@@ -6,7 +6,8 @@ if ! command -v lsb_release &> /dev/null; then
 fi
 
 # Instalamos teleport
-curl https://goteleport.com/static/install.sh | bash $1
+VERSION=$1
+curl https://goteleport.com/static/install.sh | bash $VERSION
 
 cat <<EOF1 > /etc/teleport.yaml
 version: v3
