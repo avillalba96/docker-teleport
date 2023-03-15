@@ -1,8 +1,7 @@
 #!/bin/bash
 
 # Instalamos teleport
-VERSION=$1
-curl https://goteleport.com/static/install.sh | bash $VERSION
+curl https://goteleport.com/static/install.sh | bash "$1"
 
 # Instalamos lsb-release si no están instalados
 if ! command -v lsb_release &> /dev/null; then
