@@ -59,7 +59,7 @@ docker exec teleport tctl nodes add --ttl=1h
 
 ```bash
 curl https://goteleport.com/static/install.sh | bash -s 12.1.1
-curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh | bash
+curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh && chmod +x install_client.sh && ./install_client.sh
 ```
 
 ### **Agregar al Cluster**

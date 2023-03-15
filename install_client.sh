@@ -93,3 +93,5 @@ EOF1
   systemctl start teleport.service
   systemctl daemon-reload
 fi
+
+rm install_client.sh
