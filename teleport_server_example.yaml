@@ -1,0 +1,35 @@
+version: v3
+teleport:
+  nodename: tp.example.com
+  data_dir: /var/lib/teleport
+  connection_limits:
+    max_connections: 65000
+    max_users: 1000
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  ca_pin: ""
+  diag_addr: ""
+auth_service:
+  enabled: "yes"
+  listen_addr: 0.0.0.0:3025
+  public_addr: tp.example.com:3025
+ssh_service:
+  enabled: "yes"
+  commands:
+  - name: hostname
+    command: [hostname]
+    period: 1m0s
+proxy_service:
+  enabled: "yes"
+  public_addr: tp.example.com:443
+  https_keypairs: []
+  https_keypairs_reload_interval: 0s
+  acme: {}
+  listen_addr: 0.0.0.0:3023
+  web_listen_addr: 0.0.0.0:3080
+  tunnel_listen_addr: 0.0.0.0:3024
+  ssh_public_addr: tp.example.com:3023
+  tunnel_public_addr: tp.example.com:3024

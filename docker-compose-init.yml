@@ -1,0 +1,10 @@
+version: '2'
+services:
+  teleport:
+    image: public.ecr.aws/gravitational/teleport:12
+    container_name: teleport-configure
+    entrypoint: /bin/sh
+    hostname: tp.example.com
+    command: -c "if [ ! -f /etc/teleport/teleport.yaml ]; then teleport configure > /etc/teleport/teleport.yaml; fi"
+    volumes:
+      - ./teleport/config:/etc/teleport
