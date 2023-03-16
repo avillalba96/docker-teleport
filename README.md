@@ -9,7 +9,7 @@
 ## **TAREAS/NOTAS**
 
 * Limitar grabaciones aun no es posible, incluso se puede usar S3 <https://github.com/gravitational/teleport/discussions/7475>
-* Para hacer conexiones RDP se necesita AD/GPO/CERT, todo seguro.
+* Para hacer conexiones RDP <https://goteleport.com/docs/desktop-access/active-directory-manual/> -- <https://youtu.be/YvMqgcq0MTQ>
 
 ## **Instalacion y inicializacion**
 
@@ -153,6 +153,11 @@ tsh ssh --cluster=tp.example2.com root@docker00
 ### Enviar comandos de forma remota ###
 tsh ssh --cluster=tp.example2.com root@docker00 "free -h"
 tsh scp example.txt user@host:/destination/dir
+
+### Ver grabaciones
+tsh login tp.example2.com
+tsh recording ls
+tsh play xxxx-xxxx-xxxx
 
 ### Generando un tunnel forward para entrar localmente desde la notebook ###
 # Comando para crear el tunnel
