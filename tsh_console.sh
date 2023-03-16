@@ -1,12 +1,30 @@
 #!/bin/bash
 
+#!/bin/bash
+
+# Función para instalar paquetes en diferentes sistemas operativos
+install_packages() {
+    packages="$1"
+    # Comando para instalar paquetes en diferentes sistemas operativos
+    if [[ -n "$(command -v apt-get)" ]]; then
+        sudo apt-get update && sudo apt-get install -y $packages
+    elif [[ -n "$(command -v yum)" ]]; then
+        sudo yum install -y $packages
+    elif [[ -n "$(command -v dnf)" ]]; then
+        sudo dnf install -y $packages
+    else
+        echo "No se pudo encontrar un gestor de paquetes válido."
+        exit 1
+    fi
+}
+
 # Verificar si los paquetes necesarios están instalados
 packages=("dialog")
 for package in "${packages[@]}"
 do
-    if ! dpkg -s "$package" >/dev/null 2>&1; then
+    if ! command -v "$package" >/dev/null 2>&1; then
         echo "Instalando $package..."
-        sudo apt-get -qq install "$package" >/dev/null
+        install_packages "$package"
         echo "Instalación de $package completada."
     fi
 done
