@@ -137,11 +137,11 @@ docker exec teleport tctl rm rc/tp.example2.com
 ### Insalamos TSH-CLIENT ###
 curl https://goteleport.com/static/install.sh | bash -s 12.1.1
 
-### SCRIPT PERSONALIZADO PARA FACIL USO
-#sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
-
 ### Logeamos con usuario ###
 tsh login --proxy=tp.example.com --user=username
+
+### Script de menu interactivo con Dialog *(posee las opciones conexion ssh y tunnel)*
+sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
 
 ### Logeamos a un cluster en concreto para ver los nodos o se verlos de todas formas ###
 tsh login tp.example1.com
