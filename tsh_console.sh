@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="1.2"
+VERSIONS="1.3"
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
@@ -9,7 +9,6 @@ REMOTE_SCRIPT="/tmp/tsh_console"
 
 # Obtener la versión actual del script
 VERSION_LOCAL=$(grep -oP 'VERSIONS="\K[^"]+' "$LOCAL_SCRIPT" | head -n 1)
-echo "$VERSION_LOCAL"
 
 # Descargar la última versión del script de GitHub
 wget --no-cache -q "$GITHUB_URL" -O $REMOTE_SCRIPT
@@ -18,7 +17,6 @@ wget --no-cache -q "$GITHUB_URL" -O $REMOTE_SCRIPT
 if [ $? -eq 0 ]; then
   # Obtener la versión remota del script
   VERSION_REMOTE=$(grep -oP 'VERSIONS="\K[^"]+' $REMOTE_SCRIPT | head -n 1)
-  echo "$VERSION_REMOTE"
 
   # Comparar la versión actual con la versión descargada
   if [[ "$VERSION_LOCAL" != "$VERSION_REMOTE" ]]; then
@@ -45,7 +43,7 @@ install_packages() {
 }
 
 # Verificar si los paquetes necesarios están instalados
-packages=("dialog")
+packages=("dialog" "wget" "curl")
 for package in "${packages[@]}"; do
   if ! command -v "$package" >/dev/null 2>&1; then
     echo "Instalando $package..."
