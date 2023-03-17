@@ -12,7 +12,7 @@ VERSION_LOCAL=$(grep -oP 'VERSIONS="\K[^"]+' "$LOCAL_SCRIPT" | head -n 1)
 echo "$VERSION_LOCAL"
 
 # Descargar la última versión del script de GitHub
-wget -q "$GITHUB_URL" -O $REMOTE_SCRIPT
+wget --no-cache -q "$GITHUB_URL" -O $REMOTE_SCRIPT
 
 # Verificar si la descarga fue exitosa
 if [ $? -eq 0 ]; then
