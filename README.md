@@ -25,7 +25,7 @@
 prepare_docker.sh
 ```
 
-* En caso de armar un Teleport-HUB se requiere usar SSL:
+* Hay que configurar SSL/TLS sobre el sitio *(puede variar segun como lo deseen, en nuestro caso usamos nginxproxymanager)*:
 
 1. Configurar en nginx para que el puerto 443 redireccione contra el 3080 del docker, es OBLIGATORIO el uso de certificado TLS(CA+CHAIN+KEY) incluso tener la opcion "Websockets Support" habilitada.
 2. Todos los demas puertos expuestos en docker tienen que ser accesible por NAT directamente contra el docker
