@@ -141,6 +141,7 @@ curl https://goteleport.com/static/install.sh | bash -s 12.1.1
 tsh login --proxy=tp.example.com --user=username
 
 ### Script de menu interactivo con Dialog *(posee las opciones conexion ssh y tunnel)*
+# ESTO ES USO EXCLUSIVO PERSONAL, EXISTEN VARIABLES QUE ES POSIBLE NO SE ADAPTEN A SUS CRITERIOS#
 sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
 
 ### Logeamos a un cluster en concreto para ver los nodos o se verlos de todas formas ###

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="1.3"
+VERSIONS="1.4"
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
@@ -51,6 +51,12 @@ for package in "${packages[@]}"; do
     echo "Instalación de $package completada."
   fi
 done
+
+# Verificamos estar conectado a TSH
+if tsh status | grep -q "Not logged"; then
+  read -p "Ingrese la dirección del proxy Teleport: " proxy_address
+  tsh login --proxy=$proxy_address
+fi
 
 # Verificar si se proporcionaron los parámetros necesarios
 if [ $# -eq 3 ]; then
