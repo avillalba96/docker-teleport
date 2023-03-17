@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="1.1"
+VERSIONS="1.2"
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
