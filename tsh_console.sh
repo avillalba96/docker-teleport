@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION="1.1"
+VERSIONS="1.1"
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
@@ -8,7 +8,8 @@ LOCAL_SCRIPT="/usr/local/bin/tsh_console"
 REMOTE_SCRIPT="/tmp/tsh_console"
 
 # Obtener la versión actual del script
-VERSION_LOCAL=$(grep -oP 'VERSION="\K[^"]+' "$LOCAL_SCRIPT")
+VERSION_LOCAL=$(grep -oP 'VERSIONS="\K[^"]+' "$LOCAL_SCRIPT" | head -n 1)
+echo "$VERSION_LOCAL"
 
 # Descargar la última versión del script de GitHub
 wget -q "$GITHUB_URL" -O $REMOTE_SCRIPT
@@ -16,7 +17,8 @@ wget -q "$GITHUB_URL" -O $REMOTE_SCRIPT
 # Verificar si la descarga fue exitosa
 if [ $? -eq 0 ]; then
   # Obtener la versión remota del script
-  VERSION_REMOTE=$(grep -oP 'VERSION="\K[^"]+' $REMOTE_SCRIPT)
+  VERSION_REMOTE=$(grep -oP 'VERSIONS="\K[^"]+' $REMOTE_SCRIPT | head -n 1)
+  echo "$VERSION_REMOTE"
 
   # Comparar la versión actual con la versión descargada
   if [[ "$VERSION_LOCAL" != "$VERSION_REMOTE" ]]; then
