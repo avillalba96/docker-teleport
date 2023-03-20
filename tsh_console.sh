@@ -26,6 +26,29 @@ if [ $? -eq 0 ]; then
   fi
 fi
 
+print_help() {
+    echo "Usage: tsh_console <CLUSTER> <USER> <NODE>"
+    echo ""
+    echo "Options:"
+    echo "  -h, --help     Display this help message"
+    echo "  -v, --version  Display the version of the script"
+}
+
+print_version() {
+    echo "tsh_console $VERSIONS"
+}
+
+case "$1" in
+    -h|--help)
+        print_help
+        exit
+        ;;
+    -v|--version)
+        print_version
+        exit
+        ;;
+esac
+
 # Función para instalar paquetes en diferentes sistemas operativos
 install_packages() {
   packages="$1"
