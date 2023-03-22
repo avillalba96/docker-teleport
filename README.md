@@ -8,10 +8,8 @@
 
 ## **TAREAS/NOTAS**
 
-* Limitar grabaciones aun no es posible, incluso se puede usar S3 <https://github.com/gravitational/teleport/discussions/7475>
-* GITHUB ordenar todo por carpetas
+* Configurar S3
 * Hacer que los roles los cree por defecto al levantar el docker
-* Editar cada cluster con tsh de nombre client
 * read y docker-compose con version 12.1.1 con .env de ser posible
 
 ## **Instalacion y inicializacion**
@@ -43,6 +41,8 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 ```
 
 ### **Agregar nodos**
+
+<https://goteleport.com/docs/architecture/nodes/#cluster-state>
 
 #### **Nodos contra un TELEPORT-HUB**
 
@@ -100,7 +100,7 @@ X.X.X.X example.intranet win16-ad.example.intranet
 
 * La conexion es Cliente --> Servidor.
 
-![cluster_trusted](cluster_trusted.png "cluster_trusted")
+![cluster_trusted](imgs/cluster_trusted.png "cluster_trusted")
 
 * Desde el Teleport-HUB en docker generar el token que se usara:
 
@@ -126,7 +126,7 @@ spec:
 version: v2
 ```
 
-* Hay que generar un role nuevo tanto en HUB como en CLIENT, para la confianza del trusted *(teniendo en cuenta la variable CLIENT)*
+* Hay que generar un rol nuevo del lado del Teleport-HUB, para habilitar a los usuarios *(teniendo en cuenta la variable CLIENT)*
 
 ```bash
 kind: role
@@ -164,61 +164,4 @@ docker exec teleport tctl rm nodes/xxxxxxx-xxxxxxxx-xxxxxxxxx
 
 docker exec teleport tctl get rc
 docker exec teleport tctl rm rc/tp.example2.com
-```
-
-## **Actualizar cliente en nodo**
-
-* Se deja un ejemplo para actualizar el cliente v10 a v12 en "upgrade_client_example.sh"
-* **NOTA:** Porfavor leer la documentacion antes de aplicarlo, ya que al reiniciar el servicio teleport, si una variable cambio este no levantara.
-
-## **Guia de comandos basicos**
-
-```bash
-### Insalamos TSH-CLIENT ###
-curl https://goteleport.com/static/install.sh | bash -s 12.1.1
-
-### Logeamos con usuario ###
-tsh login --proxy=tp.example.com --user=username
-
-### Script de menu interactivo con Dialog *(posee las opciones conexion ssh y tunnel)*
-# ESTO ES USO EXCLUSIVO PERSONAL, EXISTEN VARIABLES QUE ES POSIBLE NO SE ADAPTEN A SUS CRITERIOS#
-sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
-
-### Logeamos a un cluster en concreto para ver los nodos o se verlos de todas formas ###
-tsh login tp.example1.com
-tsh ls
-tsh clusters
-tsh ls node --cluster=tp.example2.com
-
-### Conectar a un nodo dentro del cluster, o conectar a un nodo en otro cluster ###
-tsh ssh root@lnx-docker02
-tsh ssh --cluster=tp.example2.com root@docker00
-
-### Enviar comandos de forma remota ###
-tsh ssh --cluster=tp.example2.com root@docker00 "free -h"
-tsh scp example.txt user@host:/destination/dir
-
-### Ver grabaciones
-tsh login tp.example2.com
-tsh recording ls
-tsh play xxxx-xxxx-xxxx
-
-### Generando un tunnel forward para entrar localmente desde la notebook ###
-# Comando para crear el tunnel
-tsh ssh --cluster=tp.example2.com -L 8889:localhost:8443 root@docker00
-# Generado redireccionamiento de puertos para hacer uso incluyendo el comando de arriba (se dejan distintas formas de crear el redir)
-redir --lport 9999 --cport 8291 --caddr 10.65.0.73 &
-socat TCP-LISTEN:9999,fork TCP:10.65.0.73:8291
-nc -l 9999 | nc 10.65.0.73 8291
-
-### Se pueden crear alias personalizados ###
-1. Creando el archivo "sudo vi /etc/tsh.yaml"
-2. Agregando dentro:
-
-aliases:
-    "connect": "bash -c 'tsh ssh --cluster=$0 $1@$2'"
-
-3. Uso del comando:
-tsh connect <CLUSTER> <USER> <HOST>
-tsh connect tp.example2.com root docker00
 ```

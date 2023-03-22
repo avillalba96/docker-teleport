@@ -10,5 +10,5 @@ grep -rl 'example.com' $dir | xargs sed -i "s/example.com/$url/g"
 docker-compose -f docker-compose-init.yml up && docker rm teleport-configure
 
 ### INICIANDO DOCKER ###
-cp teleport_server_example.yaml teleport/config/teleport.yaml
+cp examples/teleport_server_example.yaml teleport/config/teleport.yaml
 docker-compose -f docker-compose.yml --compatibility up -d; docker-compose logs -ft --tail=35
