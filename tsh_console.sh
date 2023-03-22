@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="1.6"
+VERSIONS="1.7"
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
@@ -43,7 +43,7 @@ install_packages() {
 }
 
 # Verificar si los paquetes necesarios están instalados
-packages=("dialog" "wget" "curl")
+packages=("dialog" "wget" "curl" "jq")
 for package in "${packages[@]}"; do
   if ! command -v "$package" >/dev/null 2>&1; then
     echo "Instalando $package..."
@@ -68,7 +68,7 @@ if [ $# -eq 3 ]; then
 fi
 
 # Obtener la información de los clústeres que comienzan con "tp.*"
-clusters=$(tsh clusters | awk '$1 ~ /^tp\..*/ {print $1}')
+clusters=$(tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g')
 
 # Crear un array con los nombres de los clústeres
 cluster_names=($(echo "$clusters" | tr -d '"' | sort))
@@ -89,7 +89,7 @@ fi
 cluster_name=${cluster_names[$((option - 1))]}
 
 # Obtener la información de los nodos del clúster seleccionado
-nodes=$(tsh ls node --cluster="$cluster_name" | grep -v "teleport=Teleport\|Node" | sed 's/--.*//g' | awk '{print $1}')
+nodes=$(tsh ls node --cluster="$cluster_name" --format=json | jq '.[].spec.hostname' | sed 's/"//g' | grep -Ev "tp.*")
 
 # Crear un array con los nombres de los nodos
 node_names=($(echo "$nodes" | tr -d '"' | sort))
@@ -110,7 +110,7 @@ fi
 node_name=${node_names[$((option - 1))]}
 
 # Obtener el listado de usuarios conectados
-logins=$(tsh status | grep "Logins:" | sed 's/Logins:[[:space:]]*//')
+logins=$(tsh status --format=json | jq '.active.traits.logins[]' | sed 's/"//g')
 
 # Crear un array con los nombres de los usuarios
 user_names=($(echo "$logins" | tr ',' '\n' | tr -d ' ' | grep -v 'internal'))
@@ -157,7 +157,7 @@ elif [ $option -eq 2 ]; then
   fi
 
 elif [ $option -eq 3 ]; then
-  tsh login "$cluster_name" >/dev/null && tsh recording ls | grep "$node_name" | awk '{print $1, $3, $5"-"$6"-"$7"-"$8}' | grep -v "ID" | sed 's/--.*//g' >/tmp/logs.txt
+  tsh login "$cluster_name" >/dev/null && tsh recording ls --format=json | jq -c '.[] | select(.server_hostname == "'"${node_name}"'") | {sid, participants, session_start}' | awk -F'[" ]' '{print $4" "$8" "$12}' >/tmp/logs.txt
   options=()
   while read -r line; do
     options+=("$line" "")

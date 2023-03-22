@@ -9,7 +9,9 @@
 ## **TAREAS/NOTAS**
 
 * Limitar grabaciones aun no es posible, incluso se puede usar S3 <https://github.com/gravitational/teleport/discussions/7475>
-* Para hacer conexiones RDP <https://goteleport.com/docs/desktop-access/active-directory-manual/> -- <https://youtu.be/YvMqgcq0MTQ>
+
+* GITHUB ordenar todo por carpetas
+* Hacer que los roles los cree por defecto al levantar el docker
 
 ## **Instalacion y inicializacion**
 
@@ -33,7 +35,10 @@ prepare_docker.sh
 * Generar usuario
 
 ```bash
+#usuario ssh
 docker exec teleport tctl users add usuario --roles=access,auditor,editor --logins=root
+#usuario windows
+docker exec teleport tctl users add usuario --roles=access,auditor,editor --windows-logins=Administrator
 ```
 
 ### **Agregar nodos**
@@ -59,8 +64,35 @@ docker exec teleport tctl nodes add --ttl=1h
 
 ```bash
 #https://goteleport.com/download/
+#https://goteleport.com/docs/installation/
 curl https://goteleport.com/static/install.sh | bash -s 12.1.1
 curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh && chmod +x install_client.sh && ./install_client.sh
+```
+
+### **Instalar descubrimiento de windows**
+
+* <https://goteleport.com/docs/desktop-access/active-directory-manual/>
+* <https://youtu.be/YvMqgcq0MTQ>
+
+* Se requiere que el Servidor Teleport tenga acceso ldaps tcp/636 contra el equipo con ldap, ademas necesita acceso puerto rdp tcp/3389 contra todos los windows que descubra
+* Generar el token ya que se necesitara *(incluso se necesita el CA_PIN)*:
+
+```bash
+docker exec teleport tctl tokens add --type=windowsdesktop,node
+```
+
+* Se deja ejemplo de archivo "/etc/hosts"
+
+```bash
+# PROXY TSH RDP
+X.X.X.X tp.example.com
+X.X.X.X example.intranet win16-ad.example.intranet
+```
+
+* Se deja ejemplo de archivo "/etc/teleport.yaml"
+
+```bash
+# TEXTO
 ```
 
 ### **Agregar al Cluster**
@@ -86,13 +118,20 @@ spec:
   role_map:
   - local:
     - access
-    - auditor
-    - editor
-    remote: access
+    remote: cluster-CLIENT
   token: TOKEN_ID
   tunnel_addr: tp.example-hub.com:3024
   web_proxy_addr: tp.example-hub.com:443
 version: v2
+```
+
+* Hay que generar un role nuevo tanto en HUB como en CLIENT, para la confianza del trusted *(teniendo en cuenta la variable CLIENT)*
+
+```bash
+kind: role
+metadata:
+  name: cluster-CLIENT
+version: v5
 ```
 
 * Ademas hay que editar el rol "auditor" agregando lo siguiente como parametro extra:
