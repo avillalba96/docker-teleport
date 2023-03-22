@@ -1,6 +1,13 @@
 #!/bin/bash
 
-VERSIONS="1.9"
+VERSIONS="2.1"
+
+# Verificar la existencia de tsh
+if ! command -v tsh >/dev/null 2>&1; then
+  clear
+  echo "No posees instalado tsh, porfavor leer la documentacion."
+  echo ""
+fi
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
@@ -19,13 +26,13 @@ if [ $? -eq 0 ]; then
   VERSION_REMOTE=$(grep -oP 'VERSIONS="\K[^"]+' $REMOTE_SCRIPT | head -n 1)
 
   # Comparar la versión actual con la versión descargada
-  if [[ "$VERSION_LOCAL" != "$VERSION_REMOTE" ]]; then
+  if awk -v local="$VERSION_LOCAL" -v remote="$VERSION_REMOTE" 'BEGIN { if (local < remote) exit 0; exit 1; }'; then
     # Reemplazar el script actual con el nuevo
     clear
     echo -e "Se esta actualizando el \e[1;32m[tsh_console]\e[0m a la version \e[0;31m[$VERSION_REMOTE]\e[0m"
     sudo mv $REMOTE_SCRIPT "$LOCAL_SCRIPT"
     sudo chmod +x "$LOCAL_SCRIPT"
-    sleep 3
+    sleep 5
   fi
 fi
 
