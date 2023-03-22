@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="1.7"
+VERSIONS="1.8"
 
 # Verificadno version del script
 GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
@@ -21,8 +21,11 @@ if [ $? -eq 0 ]; then
   # Comparar la versión actual con la versión descargada
   if [[ "$VERSION_LOCAL" != "$VERSION_REMOTE" ]]; then
     # Reemplazar el script actual con el nuevo
+    clear
+    echo -e "Se esta actualizando el \e[1;32m[tsh_console]\e[0m a la version \e[0;31m[$VERSION_REMOTE]\e[0m"
     sudo mv $REMOTE_SCRIPT "$LOCAL_SCRIPT"
     sudo chmod +x "$LOCAL_SCRIPT"
+    sleep 3
   fi
 fi
 
