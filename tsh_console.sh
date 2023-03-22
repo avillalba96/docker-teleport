@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="2.1"
+VERSIONS="2.2"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -167,7 +167,7 @@ elif [ $option -eq 2 ]; then
   fi
 
 elif [ $option -eq 3 ]; then
-  tsh login "$cluster_name" >/dev/null && tsh recording ls --format=json | jq -c '.[] | select(.server_hostname == "'"${node_name}"'") | {sid, participants, session_start}' | awk -F'[" ]' '{print $4" "$8" "$12}' >/tmp/logs.txt
+  tsh login "$cluster_name" >/dev/null && tsh recording ls --format=json | jq -c '.[] | select(.server_hostname == "'"${node_name}"'") | {sid, participants, session_start, interactive}' | grep -v "false" | awk -F'[" ]' '{print $4" "$8" "$12}' >/tmp/logs.txt
   options=()
   while read -r line; do
     options+=("$line" "")

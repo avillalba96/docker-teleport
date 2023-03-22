@@ -9,9 +9,10 @@
 ## **TAREAS/NOTAS**
 
 * Limitar grabaciones aun no es posible, incluso se puede usar S3 <https://github.com/gravitational/teleport/discussions/7475>
-
 * GITHUB ordenar todo por carpetas
 * Hacer que los roles los cree por defecto al levantar el docker
+* Editar cada cluster con tsh de nombre client
+* read y docker-compose con version 12.1.1 con .env de ser posible
 
 ## **Instalacion y inicializacion**
 
