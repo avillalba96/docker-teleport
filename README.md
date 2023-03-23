@@ -49,8 +49,8 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 
 #### **Nodos contra un TELEPORT-HUB**
 
-*. Ejecutar el script de instalacion brindado por tu Teleport-HUB y asociarlo
-*. Al tener la conexion establecidas, hacemos uan ediciones extras para nuestro nodo:
+* Ejecutar el script de instalacion brindado por tu Teleport-HUB y asociarlo
+* Al tener la conexion establecidas, hacemos uan ediciones extras para nuestro nodo:
 
 ```bash
 curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh | bash
@@ -58,13 +58,13 @@ curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scrip
 
 #### **Nodos contra un TELEPORT-CLIENT**
 
-*. Generar el token sobre el docker:
+* Generar el token sobre el docker:
 
 ```bash
 docker exec teleport tctl nodes add --ttl=1h
 ```
 
-*. Ejecutar el script y completar con la informacion que se solicita:
+* Ejecutar el script y completar con la informacion que se solicita:
 
 ```bash
 #https://goteleport.com/download/
@@ -155,4 +155,12 @@ spec:
       name: Auditor oversight
       roles:
       - auditor
+```
+
+### **Instalando tsh personalizado**
+
+* Se deja un script personalizado para uso de <tsh> por consola *(esta adaptado para uso personal)*
+
+```bash
+sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
 ```
