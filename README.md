@@ -10,7 +10,7 @@
 
 * Configurar S3
 * Hacer que los roles los cree por defecto al levantar el docker
-* read y docker-compose con version 12.1.1 con .env de ser posible
+* Acomodar tutorial para los windows
 
 ## **Instalacion y inicializacion**
 
@@ -20,18 +20,21 @@
 
 ### **Iniciar Servidor Teleport**
 
-* Ejecutar el siguiente script para iniciar el docker
+#### **Generando el docker**
+
+* Hacemos las preparaciones necesarias para el funcionamiento del teleport
+
+1. Configurar el sitio puerto 443(TCP) contra un proxy el cual redireccionara contra teleport:3080 incluso OBLIGATORIO el uso de certificado TLS/SSL(chain) ademas tener la opcion "Websockets Support" habilitada *(nosotros tambien configuramos las IPs desde la cual el proxy permitira el acceso)*.
+2. Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos las IPs desde la cual el proxy permitira el acceso)*.
+3. En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
+
+* Generamos y damos de alta el docker teleport
 
 ```bash
 prepare_docker.sh
 ```
 
-* Hay que configurar SSL/TLS sobre el sitio *(puede variar segun como lo deseen, en nuestro caso usamos nginxproxymanager)*:
-
-1. Configurar en nginx para que el puerto 443 redireccione contra el 3080 del docker, es OBLIGATORIO el uso de certificado TLS(CA+CHAIN+KEY) incluso tener la opcion "Websockets Support" habilitada.
-2. Todos los demas puertos expuestos en docker tienen que ser accesible por NAT directamente contra el docker
-
-* Generar usuario
+* Generar usuarios genericos
 
 ```bash
 #usuario ssh
@@ -50,7 +53,7 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 *. Al tener la conexion establecidas, hacemos uan ediciones extras para nuestro nodo:
 
 ```bash
-curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_central.sh | bash
+curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh | bash
 ```
 
 #### **Nodos contra un TELEPORT-CLIENT**
@@ -67,7 +70,7 @@ docker exec teleport tctl nodes add --ttl=1h
 #https://goteleport.com/download/
 #https://goteleport.com/docs/installation/
 curl https://goteleport.com/static/install.sh | bash -s 12.1.1
-curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/install_client.sh && chmod +x install_client.sh && ./install_client.sh
+curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_client.sh && chmod +x install_client.sh && ./install_client.sh
 ```
 
 ### **Instalar descubrimiento de windows**
@@ -98,7 +101,7 @@ X.X.X.X example.intranet win16-ad.example.intranet
 
 ### **Agregar al Cluster**
 
-* La conexion es Cliente --> Servidor.
+<https://goteleport.com/docs/management/admin/trustedclusters/>
 
 ![cluster_trusted](imgs/cluster_trusted.png "cluster_trusted")
 
@@ -108,7 +111,8 @@ X.X.X.X example.intranet win16-ad.example.intranet
 docker exec teleport tctl tokens add --type=trusted_cluster --ttl=15m
 ```
 
-* Desde un Teleport-CLIENT, en el apartado "Trusted" apuntar la informacion contra el Teleport Principal:
+* Se requiere que Teleport-CLIENT tenga salida a internet contra los puertos del Teleport-HUB:3023-3025(TCP)
+* Desde un Teleport-CLIENT, en el apartado "Trusted" apuntar la informacion contra el Teleport Principal *(editar las palabras "-CLIENT" y "tp.example-hub.com")*:
 
 ```bash
 kind: trusted_cluster
@@ -126,7 +130,7 @@ spec:
 version: v2
 ```
 
-* Hay que generar un rol nuevo del lado del Teleport-HUB, para habilitar a los usuarios *(teniendo en cuenta la variable CLIENT)*
+* Hay que generar un rol nuevo del lado del Teleport-HUB, para habilitar a los usuarios *(editar "-CLIENT" igual que el paso anterior)*
 
 ```bash
 kind: role
@@ -136,7 +140,6 @@ version: v5
 ```
 
 * Ademas hay que editar el rol "auditor" agregando lo siguiente como parametro extra:
-* <https://goteleport.com/docs/setup/reference/config/>
 
 ```bash
 spec:
@@ -152,16 +155,4 @@ spec:
       name: Auditor oversight
       roles:
       - auditor
-```
-
-### **Borrando Nodos/Clusters**
-
-<https://goteleport.com/docs/management/admin/trustedclusters/>
-
-```bash
-docker exec teleport tctl get nodes
-docker exec teleport tctl rm nodes/xxxxxxx-xxxxxxxx-xxxxxxxxx
-
-docker exec teleport tctl get rc
-docker exec teleport tctl rm rc/tp.example2.com
 ```

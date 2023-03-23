@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="2.2"
+VERSIONS="2.3"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -10,7 +10,7 @@ if ! command -v tsh >/dev/null 2>&1; then
 fi
 
 # Verificadno version del script
-GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/tsh_console.sh"
+GITHUB_URL="https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh"
 LOCAL_SCRIPT="/usr/local/bin/tsh_console"
 REMOTE_SCRIPT="/tmp/tsh_console"
 
