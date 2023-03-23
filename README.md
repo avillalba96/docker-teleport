@@ -50,7 +50,7 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 #### **Nodos contra un TELEPORT-HUB**
 
 * Ejecutar el script de instalacion brindado por tu Teleport-HUB y asociarlo
-* Al tener la conexion establecidas, hacemos uan ediciones extras para nuestro nodo:
+* Al tener la conexion establecida, hacemos unas ediciones extras para nuestro nodo:
 
 ```bash
 curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh | bash
