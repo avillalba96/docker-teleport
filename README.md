@@ -112,7 +112,113 @@ docker exec teleport tctl tokens add --type=trusted_cluster --ttl=15m
 ```
 
 * Se requiere que Teleport-CLIENT tenga salida a internet contra los puertos del Teleport-HUB:3023-3025(TCP)
-* Desde un Teleport-CLIENT, en el apartado "Trusted" apuntar la informacion contra el Teleport Principal *(editar las palabras "-CLIENT" y "tp.example-hub.com")*:
+
+* Hay que generar dos nuevos roles del lado de teleport Teleport-HUB y Teleport-CLIENT, para habilitar a los usuarios
+
+```bash
+kind: role
+metadata:
+  name: ssh-access
+spec:
+  allow:
+    app_labels:
+      '*': '*'
+    aws_role_arns:
+    - '{{internal.aws_role_arns}}'
+    azure_identities:
+    - '{{internal.azure_identities}}'
+    db_labels:
+      '*': '*'
+    db_names:
+    - '{{internal.db_names}}'
+    db_service_labels:
+      '*': '*'
+    db_users:
+    - '{{internal.db_users}}'
+    gcp_service_accounts:
+    - '{{internal.gcp_service_accounts}}'
+    kubernetes_groups:
+    - '{{internal.kubernetes_groups}}'
+    kubernetes_labels:
+      '*': '*'
+    kubernetes_resources:
+    - kind: pod
+      name: '*'
+      namespace: '*'
+    kubernetes_users:
+    - '{{internal.kubernetes_users}}'
+    logins:
+    - '{{internal.logins}}'
+    node_labels:
+      '*': '*'
+    rules:
+    - resources:
+      - session
+      verbs:
+      - read
+      - list
+  deny: {}
+  options:
+    cert_format: standard
+    create_host_user: false
+    desktop_clipboard: true
+    desktop_directory_sharing: true
+    enhanced_recording:
+    - command
+    - network
+    forward_agent: true
+    idp:
+      saml:
+        enabled: true
+    max_session_ttl: 30h0m0s
+    pin_source_ip: false
+    port_forwarding: true
+    record_session:
+      desktop: true
+    ssh_file_copy: true
+version: v6
+```
+
+```bash
+kind: role
+metadata:
+  name: windows-desktop-admins
+spec:
+  allow:
+    rules:
+    - resources:
+      - session
+      verbs:
+      - read
+      - list
+    windows_desktop_labels:
+      '*': '*'
+    windows_desktop_logins:
+    - '{{internal.windows_logins}}'
+  deny: {}
+  options:
+    cert_format: standard
+    client_idle_timeout: 15m0s
+    create_host_user: false
+    desktop_clipboard: true
+    desktop_directory_sharing: true
+    enhanced_recording:
+    - command
+    - network
+    forward_agent: true
+    idp:
+      saml:
+        enabled: true
+    max_session_ttl: 30h0m0s
+    pin_source_ip: false
+    port_forwarding: true
+    record_session:
+      desktop: true
+    ssh_file_copy: true
+version: v6
+```
+
+* Desde un Teleport-CLIENT, en el apartado "Trusted" apuntar la informacion contra el Teleport Principal *(editar "tp.example-hub.com" y "TOKEN_ID")*:
 
 ```bash
 kind: trusted_cluster
@@ -122,21 +228,18 @@ spec:
   enabled: true
   role_map:
   - local:
-    - access
-    remote: cluster-CLIENT
+    - ssh-access
+    remote: ssh-access
+  - local:
+    - auditor
+    remote: auditor
+  - local:
+    - windows-desktop-admins
+    remote: windows-desktop-admins
   token: TOKEN_ID
   tunnel_addr: tp.example-hub.com:3024
   web_proxy_addr: tp.example-hub.com:443
 version: v2
-```
-
-* Hay que generar un rol nuevo del lado del Teleport-HUB, para habilitar a los usuarios *(editar "-CLIENT" igual que el paso anterior)*
-
-```bash
-kind: role
-metadata:
-  name: cluster-CLIENT
-version: v5
 ```
 
 * Ademas hay que editar el rol "auditor" agregando lo siguiente como parametro extra:
@@ -159,7 +262,7 @@ spec:
 
 ### **Instalando tsh personalizado**
 
-* Se deja un script personalizado para uso de <tsh> por consola *(esta adaptado para uso personal)*
+* Se deja un script personalizado para uso de *"tsh"* por consola *(esta adaptado para uso personal)*
 
 ```bash
 sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
