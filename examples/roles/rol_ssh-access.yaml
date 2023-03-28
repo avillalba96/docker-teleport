@@ -1,0 +1,61 @@
+kind: role
+metadata:
+  name: ssh-access
+spec:
+  allow:
+    app_labels:
+      '*': '*'
+    aws_role_arns:
+    - '{{internal.aws_role_arns}}'
+    azure_identities:
+    - '{{internal.azure_identities}}'
+    db_labels:
+      '*': '*'
+    db_names:
+    - '{{internal.db_names}}'
+    db_service_labels:
+      '*': '*'
+    db_users:
+    - '{{internal.db_users}}'
+    gcp_service_accounts:
+    - '{{internal.gcp_service_accounts}}'
+    kubernetes_groups:
+    - '{{internal.kubernetes_groups}}'
+    kubernetes_labels:
+      '*': '*'
+    kubernetes_resources:
+    - kind: pod
+      name: '*'
+      namespace: '*'
+    kubernetes_users:
+    - '{{internal.kubernetes_users}}'
+    logins:
+    - '{{internal.logins}}'
+    node_labels:
+      '*': '*'
+    rules:
+    - resources:
+      - session
+      verbs:
+      - read
+      - list
+  deny: {}
+  options:
+    cert_format: standard
+    create_host_user: false
+    desktop_clipboard: true
+    desktop_directory_sharing: true
+    enhanced_recording:
+    - command
+    - network
+    forward_agent: true
+    idp:
+      saml:
+        enabled: true
+    max_session_ttl: 30h0m0s
+    pin_source_ip: false
+    port_forwarding: true
+    record_session:
+      desktop: true
+    ssh_file_copy: true
+version: v6

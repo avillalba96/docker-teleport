@@ -1,0 +1,36 @@
+kind: role
+metadata:
+  name: windows-desktop-admins
+spec:
+  allow:
+    rules:
+    - resources:
+      - session
+      verbs:
+      - read
+      - list
+    windows_desktop_labels:
+      '*': '*'
+    windows_desktop_logins:
+    - '{{internal.windows_logins}}'
+  deny: {}
+  options:
+    cert_format: standard
+    client_idle_timeout: 15m0s
+    create_host_user: false
+    desktop_clipboard: true
+    desktop_directory_sharing: true
+    enhanced_recording:
+    - command
+    - network
+    forward_agent: true
+    idp:
+      saml:
+        enabled: true
+    max_session_ttl: 30h0m0s
+    pin_source_ip: false
+    port_forwarding: true
+    record_session:
+      desktop: true
+    ssh_file_copy: true
+version: v6

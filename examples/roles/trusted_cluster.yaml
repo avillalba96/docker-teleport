@@ -1,0 +1,19 @@
+kind: trusted_cluster
+metadata:
+  name: tp.example-hub.com
+spec:
+  enabled: true
+  role_map:
+  - local:
+    - ssh-access
+    remote: ssh-access
+  - local:
+    - auditor
+    remote: auditor
+  - local:
+    - windows-desktop-admins
+    remote: windows-desktop-admins
+  token: TOKEN_ID
+  tunnel_addr: tp.example-hub.com:3024
+  web_proxy_addr: tp.example-hub.com:443
+version: v2

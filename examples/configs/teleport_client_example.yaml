@@ -1,0 +1,55 @@
+version: v3
+teleport:
+  nodename: "XXXX"
+  advertise_ip: "X.X.X.X"
+  data_dir: /var/lib/teleport
+  auth_token: XXXX
+  proxy_server: XXXX:443
+  ca_pin: "XXXX"
+  connection_limits:
+      max_connections: 3
+      max_users: 3
+  log:
+    output: stderr
+    severity: INFO
+    format:
+      output: text
+  diag_addr: ""
+auth_service:
+  enabled: "no"
+ssh_service:
+  enabled: "yes"
+  port_forwarding: true
+  commands:
+  - name: hostname
+    command: [hostname]
+    period: 1m0s
+  - name: so
+    command: ["/usr/bin/lsb_release", "-is", "-rs"]
+    period: 1h0m0s
+  - name: uptime
+    command: ["/usr/bin/uptime", "-p"]
+    period: 1m0s
+  - name: teleport
+    command: ["/usr/local/bin/teleport", "version"]
+    period: 1h0m0s
+  - name: docker
+    command: ["/usr/bin/docker", "ps", "--filter", "status=running", "--format", "{{.Names}}"]
+    period: 1h0m0s
+proxy_service:
+  enabled: "no"
+  https_keypairs: []
+  acme: {}
+windows_desktop_service:
+  show_desktop_wallpaper: false
+  enabled: yes
+  ldap:
+    addr: "XXXX:636"
+    domain: "XXXX.XXXX"
+    username: 'XXXX\svc-teleport'
+    sid: "XXXXXXXXX"
+    der_ca_file: /u/docker/docker-teleport/XXXX.cer
+  discovery:
+    base_dn: "*"
+    filters:
+    - '(location=Servidores)'

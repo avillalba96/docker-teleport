@@ -1,0 +1,55 @@
+kind: role
+metadata:
+  description: Review cluster events and replay sessions
+  name: auditor
+spec:
+  allow:
+    join_sessions:
+    - kinds:
+      - k8s
+      - ssh
+      modes:
+      - moderator
+      - observer
+      - peer
+      name: Auditor oversight
+      roles:
+      - auditor
+    logins:
+    - no-login-5725c284-0d43-45cf-a7e6-cea968bc3904
+    rules:
+    - resources:
+      - session
+      verbs:
+      - list
+      - read
+    - resources:
+      - event
+      verbs:
+      - list
+      - read
+    - resources:
+      - session_tracker
+      verbs:
+      - list
+      - read
+  deny: {}
+  options:
+    cert_format: standard
+    create_host_user: false
+    desktop_clipboard: true
+    desktop_directory_sharing: true
+    enhanced_recording:
+    - command
+    - network
+    forward_agent: false
+    idp:
+      saml:
+        enabled: true
+    max_session_ttl: 30h0m0s
+    pin_source_ip: false
+    port_forwarding: true
+    record_session:
+      desktop: false
+    ssh_file_copy: true
+version: v6

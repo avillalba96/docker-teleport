@@ -9,7 +9,6 @@
 ## **TAREAS/NOTAS**
 
 * Configurar S3
-* Hacer que los roles los cree por defecto al levantar el docker
 * Acomodar tutorial para los windows
 
 ## **Instalacion y inicializacion**
@@ -45,8 +44,6 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 
 ### **Agregar nodos**
 
-<https://goteleport.com/docs/architecture/nodes/#cluster-state>
-
 #### **Nodos contra un TELEPORT-HUB**
 
 * Ejecutar el script de instalacion brindado por tu Teleport-HUB y asociarlo
@@ -67,8 +64,6 @@ docker exec teleport tctl nodes add --ttl=1h
 * Ejecutar el script y completar con la informacion que se solicita:
 
 ```bash
-#https://goteleport.com/download/
-#https://goteleport.com/docs/installation/
 curl https://goteleport.com/static/install.sh | bash -s 12.1.1
 curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_client.sh && chmod +x install_client.sh && ./install_client.sh
 ```
@@ -79,185 +74,52 @@ curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scrip
 * <https://youtu.be/YvMqgcq0MTQ>
 
 * Se requiere que el Servidor Teleport tenga acceso ldaps tcp/636 contra el equipo con ldap, ademas necesita acceso puerto rdp tcp/3389 contra todos los windows que descubra
-* Generar el token ya que se necesitara *(incluso se necesita el CA_PIN)*:
+* **Se siguieron los pasos tal cual en el docs/youtube, pero se dejan ejemplos/machete de lo que nosotros usamos**
 
 ```bash
+#3/7
+docker exec teleport tctl auth export --type=windows > user-ca.cer
+#6/7
 docker exec teleport tctl tokens add --type=windowsdesktop,node
 ```
 
 * Se deja ejemplo de archivo "/etc/hosts"
 
 ```bash
-# PROXY TSH RDP
+# NPM - TELEPORT
 X.X.X.X tp.example.com
-X.X.X.X example.intranet win16-ad.example.intranet
+X.X.X.X example.intranet ad.example.intranet
 ```
 
-* Se deja ejemplo de archivo "/etc/teleport.yaml"
-
-```bash
-# TEXTO
-```
+* Se deja ejemplo del archivo "/etc/teleport.yaml" en "examples/configs/teleport_server_example.yaml"
 
 ### **Agregar al Cluster**
 
-<https://goteleport.com/docs/management/admin/trustedclusters/>
-
 ![cluster_trusted](imgs/cluster_trusted.png "cluster_trusted")
 
-* Desde el Teleport-HUB en docker generar el token que se usara:
+* Se requiere que Teleport-CLIENT tenga salida a internet contra los puertos del Teleport-HUB:3023-3025(TCP)
+* Hay que generar dos nuevos roles del lado de teleport Teleport-HUB y Teleport-CLIENT, ademas asignarlos a los usuarios correspondientes
+
+```bash
+cp examples/roles/rol_* teleport/config/
+docker exec teleport tctl create -f /etc/teleport/ssh-access.yaml
+docker exec teleport tctl create -f /etc/teleport/windows-desktop-admins.yaml
+docker exec teleport tctl create -f /etc/teleport/auditor.yaml
+docker exec teleport tctl users add usuario --roles=ssh-access,windows-desktop-admins
+```
+
+* Desde el Teleport-HUB en docker generar el token que se usara en el siguiente paso:
 
 ```bash
 docker exec teleport tctl tokens add --type=trusted_cluster --ttl=15m
 ```
 
-* Se requiere que Teleport-CLIENT tenga salida a internet contra los puertos del Teleport-HUB:3023-3025(TCP)
-
-* Hay que generar dos nuevos roles del lado de teleport Teleport-HUB y Teleport-CLIENT, para habilitar a los usuarios
-
-```bash
-kind: role
-metadata:
-  name: ssh-access
-spec:
-  allow:
-    app_labels:
-      '*': '*'
-    aws_role_arns:
-    - '{{internal.aws_role_arns}}'
-    azure_identities:
-    - '{{internal.azure_identities}}'
-    db_labels:
-      '*': '*'
-    db_names:
-    - '{{internal.db_names}}'
-    db_service_labels:
-      '*': '*'
-    db_users:
-    - '{{internal.db_users}}'
-    gcp_service_accounts:
-    - '{{internal.gcp_service_accounts}}'
-    kubernetes_groups:
-    - '{{internal.kubernetes_groups}}'
-    kubernetes_labels:
-      '*': '*'
-    kubernetes_resources:
-    - kind: pod
-      name: '*'
-      namespace: '*'
-    kubernetes_users:
-    - '{{internal.kubernetes_users}}'
-    logins:
-    - '{{internal.logins}}'
-    node_labels:
-      '*': '*'
-    rules:
-    - resources:
-      - session
-      verbs:
-      - read
-      - list
-  deny: {}
-  options:
-    cert_format: standard
-    create_host_user: false
-    desktop_clipboard: true
-    desktop_directory_sharing: true
-    enhanced_recording:
-    - command
-    - network
-    forward_agent: true
-    idp:
-      saml:
-        enabled: true
-    max_session_ttl: 30h0m0s
-    pin_source_ip: false
-    port_forwarding: true
-    record_session:
-      desktop: true
-    ssh_file_copy: true
-version: v6
-```
+* Editar las variables *"tp.example-hub.com"* y *"TOKEN_ID"* en el archivo "examples/roles/trusted_cluster.yaml"
+* Desde un Teleport-CLIENT generar el rol trusted
 
 ```bash
-kind: role
-metadata:
-  name: windows-desktop-admins
-spec:
-  allow:
-    rules:
-    - resources:
-      - session
-      verbs:
-      - read
-      - list
-    windows_desktop_labels:
-      '*': '*'
-    windows_desktop_logins:
-    - '{{internal.windows_logins}}'
-  deny: {}
-  options:
-    cert_format: standard
-    client_idle_timeout: 15m0s
-    create_host_user: false
-    desktop_clipboard: true
-    desktop_directory_sharing: true
-    enhanced_recording:
-    - command
-    - network
-    forward_agent: true
-    idp:
-      saml:
-        enabled: true
-    max_session_ttl: 30h0m0s
-    pin_source_ip: false
-    port_forwarding: true
-    record_session:
-      desktop: true
-    ssh_file_copy: true
-version: v6
-```
-
-* Desde un Teleport-CLIENT, en el apartado "Trusted" apuntar la informacion contra el Teleport Principal *(editar "tp.example-hub.com" y "TOKEN_ID")*:
-
-```bash
-kind: trusted_cluster
-metadata:
-  name: tp.example-hub.com
-spec:
-  enabled: true
-  role_map:
-  - local:
-    - ssh-access
-    remote: ssh-access
-  - local:
-    - auditor
-    remote: auditor
-  - local:
-    - windows-desktop-admins
-    remote: windows-desktop-admins
-  token: TOKEN_ID
-  tunnel_addr: tp.example-hub.com:3024
-  web_proxy_addr: tp.example-hub.com:443
-version: v2
-```
-
-* Ademas hay que editar el rol "auditor" agregando lo siguiente como parametro extra:
-
-```bash
-spec:
-  allow:
-    join_sessions:
-    - kinds:
-      - k8s
-      - ssh
-      modes:
-      - moderator
-      - observer
-      - peer
-      name: Auditor oversight
-      roles:
-      - auditor
+cp examples/roles/trusted_* teleport/config/
+docker exec teleport tctl create -f /etc/teleport/trusted_cluster.yaml
 ```
 
 ### **Instalando tsh personalizado**
