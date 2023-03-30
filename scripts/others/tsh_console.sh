@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="2.3"
+VERSIONS="2.4"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -73,6 +73,7 @@ fi
 # Verificar si se proporcionaron los parámetros necesarios
 if [ $# -eq 3 ]; then
   # Los parámetros se proporcionaron, ejecutar el comando tsh ssh
+  clear
   tsh ssh --cluster=tp.$1 $2@$3
   exit
 fi
@@ -145,6 +146,7 @@ option=$(dialog --clear --menu "Selecciona una acción:" 0 0 0 1 "Conexion SSH" 
 if [ -z "$option" ]; then
   exit 1
 elif [ $option -eq 1 ]; then
+  clear
   tsh ssh --cluster="$cluster_name" "$root_user@$node_name"
 elif [ $option -eq 2 ]; then
   # Solicitar al usuario el puerto local y el puerto destino
@@ -163,6 +165,7 @@ elif [ $option -eq 2 ]; then
     remote_port=$(sed -n 2p /tmp/ports.txt)
 
     # Ejecutar el comando de túnel con los puertos especificados por el usuario
+    clear
     tsh ssh --cluster="$cluster_name" -L "$local_port":localhost:"$remote_port" "$root_user@$node_name"
   fi
 
@@ -177,6 +180,7 @@ elif [ $option -eq 3 ]; then
 
   if [ ! -z "$choice" ]; then
     recording_id=$(echo "$choice" | awk '{print $1}')
+    clear
     tsh play "$recording_id"
   fi
 fi

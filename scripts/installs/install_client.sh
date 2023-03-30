@@ -48,6 +48,8 @@ auth_service:
 ssh_service:
   enabled: "yes"
   port_forwarding: true
+  pam:
+    enabled: yes
   commands:
   - name: hostname
     command: [hostname]
