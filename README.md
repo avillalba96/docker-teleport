@@ -25,7 +25,8 @@
 
 1. Configurar el sitio puerto 443(TCP) contra un proxy el cual redireccionara contra teleport:3080 incluso OBLIGATORIO el uso de certificado TLS/SSL(chain) ademas tener la opcion "Websockets Support" habilitada *(nosotros tambien configuramos las IPs desde la cual el proxy permitira el acceso)*.
 2. Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos las IPs desde la cual el proxy permitira el acceso)*.
-3. En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
+3. El docker que tenga el servicio del Teleport necesita tener salida a internet, ya que las cookies/etc las consulta contra internet
+4. En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
 
 * Generamos y damos de alta el docker teleport
 
@@ -64,7 +65,8 @@ docker exec teleport tctl nodes add --ttl=1h
 * Ejecutar el script y completar con la informacion que se solicita:
 
 ```bash
-curl https://goteleport.com/static/install.sh | bash -s 12.1.1
+if [ $(grep -c "VERSION_CODENAME" /etc/os-release) -eq 0 ]; then echo "FAIL: VERSION_CODENAME"; else curl https://goteleport.com/static/install.sh | bash -s 12.1.1; fi
+
 curl -O https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_client.sh && chmod +x install_client.sh && ./install_client.sh
 ```
 
@@ -102,10 +104,11 @@ X.X.X.X example.intranet ad.example.intranet
 
 ```bash
 cp examples/roles/rol_* teleport/config/
-docker exec teleport tctl create -f /etc/teleport/ssh-access.yaml
-docker exec teleport tctl create -f /etc/teleport/windows-desktop-admins.yaml
-docker exec teleport tctl create -f /etc/teleport/auditor.yaml
-docker exec teleport tctl users add usuario --roles=ssh-access,windows-desktop-admins
+docker exec teleport tctl create -f /etc/teleport/rol_ssh-access.yaml
+docker exec teleport tctl create -f /etc/teleport/rol_windows-desktop-admins.yaml
+docker exec teleport tctl create -f /etc/teleport/rol_auditor.yaml
+rm teleport/config/rol_*
+docker exec teleport tctl users update usuario --set-roles=ssh-access,windows-desktop-admins,auditor,access,editor
 ```
 
 * Desde el Teleport-HUB en docker generar el token que se usara en el siguiente paso:
@@ -120,6 +123,7 @@ docker exec teleport tctl tokens add --type=trusted_cluster --ttl=15m
 ```bash
 cp examples/roles/trusted_* teleport/config/
 docker exec teleport tctl create -f /etc/teleport/trusted_cluster.yaml
+rm teleport/config/trusted_*
 ```
 
 ### **Instalando tsh personalizado**
