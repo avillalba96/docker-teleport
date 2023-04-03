@@ -43,9 +43,9 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --logi
 docker exec teleport tctl users add usuario --roles=access,auditor,editor --windows-logins=Administrator
 ```
 
-### **Agregar nodos**
+### **Agregar nodos/hosts**
 
-#### **Nodos contra un TELEPORT-HUB**
+#### **Nodos contra un TELEPORT-HUB *(Se usa para conectar contra un teleport a través de internet)***
 
 * Ejecutar el script de instalacion brindado por tu Teleport-HUB y asociarlo
 * Al tener la conexion establecida, hacemos unas ediciones extras para nuestro nodo:
@@ -54,7 +54,7 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh | bash
 ```
 
-#### **Nodos contra un TELEPORT-CLIENT**
+#### **Nodos contra un TELEPORT-CLIENT *(Se usa para conectar contra un teleport local)***
 
 * Generar el token sobre el docker:
 
