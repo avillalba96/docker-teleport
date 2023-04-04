@@ -1,7 +1,7 @@
 version: '2'
 services:
   teleport:
-    image: public.ecr.aws/gravitational/teleport:12.1.1
+    image: public.ecr.aws/gravitational/teleport:12.1.5
     container_name: teleport-configure
     entrypoint: /bin/sh
     hostname: tp.example.com
