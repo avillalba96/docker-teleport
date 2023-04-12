@@ -125,7 +125,7 @@ docker exec teleport tctl tokens add --type=trusted_cluster --ttl=15m
 
 ```bash
 cp examples/roles/trusted_* teleport/config/
-teleport/config/trusted_cluster.yaml
+vi teleport/config/trusted_cluster.yaml
 docker exec teleport tctl create -f /etc/teleport/trusted_cluster.yaml
 rm teleport/config/trusted_*
 ```
