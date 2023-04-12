@@ -66,6 +66,7 @@ docker exec teleport tctl nodes add --ttl=1h
 
 ```bash
 # Instalancio Servicio
+apt-get install apt-transport-https -y
 if [ $(grep -c "VERSION_CODENAME" /etc/os-release) -eq 0 ]; then echo "FAIL: VERSION_CODENAME"; else curl https://goteleport.com/static/install.sh | bash -s 12.1.5; fi
 # Recargando servicio en caso de actualizacion
 #systemctl daemon-reload && systemctl reload teleport.service
