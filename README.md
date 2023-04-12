@@ -111,7 +111,7 @@ docker exec teleport tctl create -f /etc/teleport/rol_ssh-access.yaml
 docker exec teleport tctl create -f /etc/teleport/rol_windows-desktop-admins.yaml
 docker exec teleport tctl create -f /etc/teleport/rol_auditor.yaml
 rm teleport/config/rol_*
-docker exec teleport tctl users update usuario --set-roles=ssh-access,windows-desktop-admins,auditor,access,editor
+#docker exec teleport tctl users update usuario --set-roles=ssh-access,windows-desktop-admins,auditor,access,editor
 ```
 
 * Desde el Teleport-HUB en docker generar el token que se usara en el siguiente paso:
@@ -125,6 +125,7 @@ docker exec teleport tctl tokens add --type=trusted_cluster --ttl=15m
 
 ```bash
 cp examples/roles/trusted_* teleport/config/
+teleport/config/trusted_cluster.yaml
 docker exec teleport tctl create -f /etc/teleport/trusted_cluster.yaml
 rm teleport/config/trusted_*
 ```
