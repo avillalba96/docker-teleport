@@ -31,7 +31,7 @@
 * Generamos y damos de alta el docker teleport
 
 ```bash
-prepare_docker.sh
+./prepare_docker.sh
 ```
 
 * Generar usuarios genericos
