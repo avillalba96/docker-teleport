@@ -16,8 +16,9 @@ fi
 docker-compose -f docker-compose-init.yml up && docker-compose -f docker-compose-init.yml rm -f teleport-configure
 
 ### INICIANDO DOCKER ###
+docker network create npm-network
 cp examples/configs/teleport_server_example.yaml teleport/config/teleport.yaml
-read -p "¿Quiere iniciar Teleport y Nginx (S/N)? " respuesta
+read -p "¿Quiere iniciar Teleport+Nginx (S/N)? " respuesta
 if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
     read -p "Ingrese la contraseña para MYSQL_PASS: " password01
     read -p "Ingrese la contraseña para ROOT_PASSWORD: " password02
