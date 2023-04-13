@@ -22,6 +22,16 @@
 #### **Generando el docker**
 
 * Configurar para que los puertos 443/80(TCP) nateen contra el servidor *nginxproxymanager*
+* Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos que unicamente se pueda acceder desde ARG)*.
+* El docker que tenga el servicio del Teleport necesita tener salida a internet, ya que las cookies/etc las consulta contra internet
+* En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
+
+* Generamos y damos de alta el docker teleport
+
+```bash
+./prepare_docker.sh
+```
+
 * Ademas dentro del *nginxproxymanager* configurar las siguientes opciones OBLIGATORIAS *(en caso de usar ssl custom, requiere tener el certificado chain)*:
 
 ![npm01](imgs/npm01.png "npm01")
@@ -56,16 +66,6 @@ location / {
     # Proxy!
     include conf.d/include/proxy.conf;
   }
-```
-
-* Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos que unicamente se pueda acceder desde ARG)*.
-* El docker que tenga el servicio del Teleport necesita tener salida a internet, ya que las cookies/etc las consulta contra internet
-* En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
-
-* Generamos y damos de alta el docker teleport
-
-```bash
-./prepare_docker.sh
 ```
 
 * Generar usuarios genericos en teleport
