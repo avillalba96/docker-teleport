@@ -6,10 +6,10 @@ dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
 
 read -p "¿Quiere utilizar el dominio $url (S/N)? " respuesta
 if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
-    grep -rl 'example.com' $dir | xargs sed -i "s/example.com/$url/g"
+    grep -rl 'example.com' $dir | grep -vE "prepare_docker.sh|README.md" | xargs sed -i "s/example.com/$url/g"
 else
-    read -p "Escriba el dominio a utilizar: " url
-    grep -rl 'example.com' $dir | xargs sed -i "s/example.com/$url/g"
+    read -p "Escriba el dominio a utilizar (ignorando el subdominio tp.): " url
+    grep -rl 'example.com' $dir | grep -vE "prepare_docker.sh|README.md" | xargs sed -i "s/example.com/$url/g"
 fi
 
 ### PREPARANDO DOCKER ###
@@ -34,5 +34,5 @@ if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
 else
     docker-compose -f docker-compose.yml --profile teleport --compatibility up -d
 fi
-#docker-compose -f docker-compose.yml --profile full down -v
-#docker-compose logs -ft --tail=35
+#docker-compose -f docker-compose.yml --profile teleport down -v
+#docker-compose logs -ft --tail=35 teleport

@@ -36,7 +36,7 @@
 
 ![npm01](imgs/npm01.png "npm01")
 ![npm02](imgs/npm02.png "npm02")
-![npm03](imgs/npm02.png "npm03")
+![npm03](imgs/npm03.png "npm03")
 
 * En caso de querer filtrar unicamente desde ARG el acceso al sitio se puede bloquear desde el mismo *nginxproxymanager*
 
@@ -100,7 +100,7 @@ docker exec teleport tctl nodes add --ttl=1h
 
 ```bash
 # Instalancio Servicio
-apt-get install apt-transport-https curl -y
+apt-get update; apt-get install apt-transport-https curl -y
 if [ $(grep -c "VERSION_CODENAME" /etc/os-release) -eq 0 ]; then echo "FAIL: VERSION_CODENAME"; else curl https://goteleport.com/static/install.sh | bash -s 12.1.5; fi
 # Recargando servicio en caso de actualizacion
 #systemctl daemon-reload && systemctl reload teleport.service
