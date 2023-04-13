@@ -21,12 +21,46 @@
 
 #### **Generando el docker**
 
-* Hacemos las preparaciones necesarias para el funcionamiento del teleport
+* Configurar para que los puertos 443/80(TCP) nateen contra el servidor *nginxproxymanager*
+* Ademas dentro del *nginxproxymanager* configurar las siguientes opciones OBLIGATORIAS *(en caso de usar ssl custom, requiere tener el certificado chain)*:
 
-1. Configurar el sitio puerto 443(TCP) contra un proxy el cual redireccionara contra teleport:3080 incluso OBLIGATORIO el uso de certificado TLS/SSL(chain) ademas tener la opcion "Websockets Support" habilitada *(nosotros tambien configuramos las IPs desde la cual el proxy permitira el acceso)*.
-2. Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos las IPs desde la cual el proxy permitira el acceso)*.
-3. El docker que tenga el servicio del Teleport necesita tener salida a internet, ya que las cookies/etc las consulta contra internet
-4. En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
+![npm01](imgs/npm01.png "npm01")
+![npm02](imgs/npm02.png "npm02")
+![npm03](imgs/npm02.png "npm03")
+
+* En caso de querer filtrar unicamente desde ARG el acceso al sitio se puede bloquear desde el mismo *nginxproxymanager*
+
+```bash
+mkdir ./data/nginx/custom
+cp ./examples/configs/cidr-arg.conf ./data/nginx/custom/.
+cp ./examples/configs/RFC1918.conf ./data/nginx/custom/.
+chown -R --reference=./data/access ./data/nginx/custom
+```
+
+* Se deja lo que hay que agregar en *Advanced* para utilizar los archivos indicados
+
+```bash
+location / {
+    # Access Rules
+    include /data/nginx/custom/cidr-arg.conf;
+    include /data/nginx/custom/RFC1918.conf;
+    deny all;
+
+    # Access checks must...
+    satisfy all;
+    
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $http_connection;
+    proxy_http_version 1.1;
+
+    # Proxy!
+    include conf.d/include/proxy.conf;
+  }
+```
+
+* Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos que unicamente se pueda acceder desde ARG)*.
+* El docker que tenga el servicio del Teleport necesita tener salida a internet, ya que las cookies/etc las consulta contra internet
+* En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
 
 * Generamos y damos de alta el docker teleport
 
@@ -34,7 +68,7 @@
 ./prepare_docker.sh
 ```
 
-* Generar usuarios genericos
+* Generar usuarios genericos en teleport
 
 ```bash
 #usuario ssh
