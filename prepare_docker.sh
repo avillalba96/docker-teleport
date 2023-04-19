@@ -12,7 +12,7 @@ else
     grep -rl 'example.com' $dir | grep -vE "prepare_docker.sh|README.md" | xargs sed -i "s/example.com/$url/g"
 fi
 
-### PREPARANDO DOCKER ###
+### PREPARANDO EL DOCKER ###
 docker-compose -f docker-compose-init.yml up && docker-compose -f docker-compose-init.yml rm -f teleport-configure
 
 ### INICIANDO DOCKER ###
