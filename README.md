@@ -85,7 +85,7 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 * Al tener la conexion establecida, hacemos unas ediciones extras para nuestro nodo:
 
 ```bash
-curl -s https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh | bash
+sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh)"
 ```
 
 #### **Nodos contra un TELEPORT-CLIENT *(Se usa para conectar contra un teleport local)***
