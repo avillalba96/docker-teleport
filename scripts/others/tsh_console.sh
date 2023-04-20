@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="2.4"
+VERSIONS="2.5"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -15,7 +15,7 @@ LOCAL_SCRIPT="/usr/local/bin/tsh_console"
 REMOTE_SCRIPT="/tmp/tsh_console"
 
 # Obtener la versión actual del script
-VERSION_LOCAL=$(grep -oP 'VERSIONS="\K[^"]+' "$LOCAL_SCRIPT" | head -n 1)
+VERSION_LOCAL=$(grep -o 'VERSIONS="\K[^"]+' "$LOCAL_SCRIPT" | head -n 1)
 
 # Descargar la última versión del script de GitHub
 wget -q "$GITHUB_URL" -O $REMOTE_SCRIPT
@@ -23,7 +23,7 @@ wget -q "$GITHUB_URL" -O $REMOTE_SCRIPT
 # Verificar si la descarga fue exitosa
 if [ $? -eq 0 ]; then
   # Obtener la versión remota del script
-  VERSION_REMOTE=$(grep -oP 'VERSIONS="\K[^"]+' $REMOTE_SCRIPT | head -n 1)
+  VERSION_REMOTE=$(grep -o 'VERSIONS="\K[^"]+' $REMOTE_SCRIPT | head -n 1)
 
   # Comparar la versión actual con la versión descargada
   if awk -v local="$VERSION_LOCAL" -v remote="$VERSION_REMOTE" 'BEGIN { if (local < remote) exit 0; exit 1; }'; then
@@ -44,6 +44,8 @@ install_packages() {
     sudo apt-get update && sudo apt-get install -y $packages
   elif [[ -n "$(command -v yum)" ]]; then
     sudo yum install -y $packages
+  elif [[ -n "$(command -v brew)" ]]; then
+    brew install $packages
   elif [[ -n "$(command -v dnf)" ]]; then
     sudo dnf install -y $packages
   else
