@@ -13,7 +13,7 @@ else
 fi
 
 ### PREPARANDO EL DOCKER ###
-docker-compose -f docker-compose-init.yml up && docker-compose -f docker-compose-init.yml rm -f teleport-configure
+docker-compose -f docker-compose-init.yml up && docker-compose -f docker-compose-init.yml rm -f teleport
 
 ### INICIANDO DOCKER ###
 docker network create npm-network
