@@ -19,7 +19,7 @@ fi
 read -p "¿Quiere agregar un label (env) personalizado (S/N)? " respuesta
 if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
     read -p "Escriba la variable del label (env): " labelenv
-    sed -i "s/  nodename:.*/  nodename: $labelenv/g" /etc/teleport.yaml
+    sed -i "/ssh_service:/a \  labels:\n    env: $labelenv" /etc/teleport.yaml
 fi
 
 if command -v docker >/dev/null 2>&1; then
