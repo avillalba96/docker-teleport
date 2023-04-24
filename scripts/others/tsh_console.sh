@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="2.6"
+VERSIONS="2.8"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -55,7 +55,7 @@ install_packages() {
 }
 
 # Verificar si los paquetes necesarios están instalados
-packages=("dialog" "wget" "curl" "jq" "awk")
+packages=("dialog" "wget" "curl" "jq" "awk" "kubectl")
 for package in "${packages[@]}"; do
   if ! command -v "$package" >/dev/null 2>&1; then
     echo "Instalando $package..."
@@ -101,6 +101,7 @@ fi
 # Obtener el nombre del clúster seleccionado
 cluster_name=${cluster_names[$((option - 1))]}
 
+function ssh_function() {
 # Obtener la información de los nodos del clúster seleccionado
 nodes=$(tsh ls node --cluster="$cluster_name" --format=json | jq '.[].spec.hostname' | sed 's/"//g' | grep -Ev "tp.*")
 
@@ -123,10 +124,12 @@ fi
 node_name=${node_names[$((option - 1))]}
 
 # Obtener el listado de usuarios conectados
-logins=$(tsh status --format=json | jq '.active.traits.logins[]' | sed 's/"//g')
+#logins=$(tsh status --format=json | jq '.active.traits.logins[]' | sed 's/"//g')
+logins=$(tsh status --format=json | jq '.active.logins[]' | sed 's/"//g')
 
 # Crear un array con los nombres de los usuarios
-user_names=($(echo "$logins" | tr ',' '\n' | tr -d ' ' | grep -v 'internal'))
+#user_names=($(echo "$logins" | tr ',' '\n' | tr -d ' ' | grep -v 'internal'))
+user_names=($(echo "$logins" | tr ',' '\n' | tr -d ' '))
 
 # Crear una lista con los nombres de los usuarios
 user_list=""
@@ -186,3 +189,50 @@ elif [ $option -eq 3 ]; then
     tsh play "$recording_id"
   fi
 fi
+
+}
+
+function kube_function() {
+# Obtener la información de los kubes del clúster seleccionado
+kubes=$(tsh kube ls --cluster="$cluster_name" --format=json | jq '.[].kube_cluster_name' | sed 's/"//g')
+
+# Crear un array con los nombres de los kubes
+kube_names=($(echo "$kubes" | tr -d '"' | sort))
+
+# Crear una lista con los nombres de los kubes
+kube_list=""
+for i in "${!kube_names[@]}"; do
+  kube_list+="$((i + 1)) ${kube_names[i]} "
+done
+
+# Mostrar el menú y obtener la opción seleccionada
+option=$(dialog --clear --menu "Selecciona un kube:" 0 0 0 $kube_list 3>&1 1>&2 2>&3)
+if [ -z "$option" ]; then
+  exit 1
+fi
+
+# Obtener el nombre del kube seleccionado
+kube_name=${kube_names[$((option - 1))]}
+
+# Conectando kube
+export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
+tsh kube login --cluster="$cluster_name" $kube_name
+}
+
+# Mostrar pantalla de selección
+CHOICE=$(dialog --stdout --title "Seleccionar una opción" --menu "¿Qué desea hacer?" 0 0 0 \
+  "SSH" "Conectar por SSH" \
+  "KUBE" "Conectar al KUBE")
+
+# Ejecutar la función correspondiente
+case $CHOICE in
+  "SSH")
+    ssh_function
+    ;;
+  "KUBE")
+    kube_function
+    ;;
+  *)
+    exit
+    ;;
+esac

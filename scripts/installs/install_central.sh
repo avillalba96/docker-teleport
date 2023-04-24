@@ -16,6 +16,12 @@ if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
     sed -i "s/  nodename:.*/  nodename: $nombrehost/g" /etc/teleport.yaml
 fi
 
+read -p "¿Quiere agregar un label (env) personalizado (S/N)? " respuesta
+if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
+    read -p "Escriba la variable del label (env): " labelenv
+    sed -i "s/  nodename:.*/  nodename: $labelenv/g" /etc/teleport.yaml
+fi
+
 if command -v docker >/dev/null 2>&1; then
     sed -i 's/proxy_service:/  - name: docker\n    command: ["\/usr\/bin\/docker", "ps", "--filter", "status=running", "--format", "{{.Names}}"]\n    period: 1h0m0s\nproxy_service:/g' /etc/teleport.yaml
 fi

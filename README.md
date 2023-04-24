@@ -22,7 +22,7 @@
 #### **Generando el docker**
 
 * Configurar para que los puertos 443/80(TCP) nateen contra el servidor *nginxproxymanager*
-* Los demas puertos 3023:3025/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos que unicamente se pueda acceder desde ARG)*.
+* Los demas puertos 3023:3026/TCP deben natear contra el servidior de teleport *(nosotros tambien configuramos que unicamente se pueda acceder desde ARG)*.
 * El docker que tenga el servicio del Teleport necesita tener salida a internet, ya que las cookies/etc las consulta contra internet
 * En caso de no usar el servicio proxy-teleport, es necesario que los nodos tengan el acceso teleport:3025(TCP) y que el teleport pueda acceder a ellos node:3022(TCP)
 
@@ -137,7 +137,7 @@ X.X.X.X example.intranet ad.example.intranet
 
 ![cluster_trusted](imgs/cluster_trusted.png "cluster_trusted")
 
-* Se requiere que Teleport-CLIENT tenga salida a internet contra los puertos del Teleport-HUB:3023-3025(TCP)
+* Se requiere que Teleport-CLIENT tenga salida a internet contra los puertos del Teleport-HUB:3023-3026(TCP)
 * Hay que generar dos nuevos roles del lado de teleport Teleport-HUB y Teleport-CLIENT, ademas asignarlos a los usuarios correspondientes
 
 ```bash
@@ -164,6 +164,11 @@ vi teleport/config/trusted_cluster.yaml
 docker exec teleport tctl create -f /etc/teleport/trusted_cluster.yaml
 rm teleport/config/trusted_*
 ```
+
+### **Machete generico para GITHUB**
+
+* Se dejan archivos de ejemplo en *examples/configs/teleport_auth...*
+<https://goteleport.com/docs/access-controls/sso/github-sso/>
 
 ### **Instalando tsh personalizado**
 

@@ -89,6 +89,12 @@ EOF1
   sed -i 's/CA_TOKEN/'"$CA_TOKEN"'/g' /etc/teleport.yaml
   sed -i 's/SERVER/'"$SERVER"'/g' /etc/teleport.yaml
 
+read -p "¿Quiere cambiar el nodename del host (S/N)? " respuesta
+if [[ "$respuesta" == "S" || "$respuesta" == "s" ]]; then
+    read -p "Escriba el nombre de host a mostrar: " nombrehost
+    sed -i "s/  nodename:.*/  nodename: $nombrehost/g" /etc/teleport.yaml
+fi
+
   if command -v docker >/dev/null 2>&1; then
     sed -i 's/proxy_service:/  - name: docker\n    command: ["\/usr\/bin\/docker", "ps", "--filter", "status=running", "--format", "{{.Names}}"]\n    period: 1h0m0s\nproxy_service:/g' /etc/teleport.yaml
   fi

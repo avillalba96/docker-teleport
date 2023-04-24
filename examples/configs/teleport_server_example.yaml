@@ -1,5 +1,8 @@
 version: v3
 teleport:
+#  storage:
+#      region: XXXX
+#      audit_sessions_uri: "s3://XXXX/records"
   nodename: tp.example.com
   data_dir: /var/lib/teleport
   connection_limits:
@@ -13,6 +16,8 @@ teleport:
   ca_pin: ""
   diag_addr: ""
 auth_service:
+#  authentication:
+#    type: github
   enabled: "yes"
   listen_addr: 0.0.0.0:3025
   public_addr: tp.example.com:3025
@@ -33,3 +38,6 @@ proxy_service:
   tunnel_listen_addr: 0.0.0.0:3024
   ssh_public_addr: tp.example.com:3023
   tunnel_public_addr: tp.example.com:3024
+  kubernetes:
+    enabled: yes
+    listen_addr: 0.0.0.0:3026

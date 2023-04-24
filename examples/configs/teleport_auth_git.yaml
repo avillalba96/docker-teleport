@@ -1,0 +1,17 @@
+kind: github
+metadata:
+  name: github
+spec:
+  api_endpoint_url: ""
+  client_id: VAR_ID
+  client_secret: VAR_SECRET
+  display: GitHub
+  endpoint_url: ""
+  redirect_url: https://VAR_URL/v1/webapi/github/callback
+  teams_to_logins: null
+  teams_to_roles:
+  - organization: VAR_CLIENT
+    roles:
+    - access
+    team: tprole-level1
+version: v3

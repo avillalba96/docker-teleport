@@ -1,0 +1,9 @@
+kind: cluster_auth_preference
+metadata:
+  name: cluster-auth-preference
+spec:
+  type: github
+  webauthn:
+    rp_id: 'VAR_URL'
+version: v2
+#tctl create -f cap.yaml

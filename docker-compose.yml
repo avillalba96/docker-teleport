@@ -19,10 +19,15 @@ services:
       - "3023:3023"
       - "3024:3024"
       - "3025:3025"
+      - "3026:3026"
       - "3080:3080"
     volumes:
       - ./teleport/config:/etc/teleport
       - ./teleport/data:/var/lib/teleport
+#    environment:
+#      AWS_ACCESS_KEY_ID: "XXXX"
+#      AWS_SECRET_ACCESS_KEY: "XXXX"
+#      AWS_DEFAULT_REGION: "XXXX"
     networks:
       - npm-network
       - default
