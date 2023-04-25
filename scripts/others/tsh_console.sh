@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="2.8"
+VERSIONS="2.9"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -216,6 +216,7 @@ kube_name=${kube_names[$((option - 1))]}
 
 # Conectando kube
 export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
+tsh kube login --cluster="$cluster_name" --all
 tsh kube login --cluster="$cluster_name" $kube_name
 }
 

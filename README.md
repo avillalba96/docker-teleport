@@ -88,6 +88,7 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh)"
 ```
 
+
 #### **Nodos contra un TELEPORT-CLIENT *(Se usa para conectar contra un teleport local)***
 
 * Generar el token sobre el docker:
