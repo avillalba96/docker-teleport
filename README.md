@@ -8,7 +8,6 @@
 
 ## **TAREAS/NOTAS**
 
-* Configurar S3
 * Acomodar tutorial para los windows
 
 ## **Instalacion y inicializacion**
