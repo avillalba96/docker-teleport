@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="3.2"
+VERSIONS="3.3"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -69,9 +69,9 @@ while ! tsh status > /dev/null 2>&1; do
   # Si el código de salida no es 0, ejecutar "tsh login"
   read -p "Ingrese la dirección del proxy Teleport: " proxy_address
   tsh login --proxy=$proxy_address > /dev/null 2>&1
-  tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g' > /tmp/tsh_clusters
-  tsh status --format=json | jq '.active.logins[]' | sed 's/"//g' > /tmp/tsh_users
-  tsh ls node --cluster='tp.peperina.io' --format=json | jq '.[].spec.hostname' | sed 's/\"//g' | grep -Ev 'tp.*' > /tmp/tsh_nodes
+#  tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g' > /tmp/tsh_clusters
+#  tsh status --format=json | jq '.active.logins[]' | sed 's/"//g' > /tmp/tsh_users
+#  tsh ls node --cluster=$cluster_name --format=json | jq '.[].spec.hostname' | sed 's/\"//g' | grep -Ev 'tp.*' > /tmp/tsh_nodes
 done
 
 # Verificar si se proporcionaron los parámetros necesarios
