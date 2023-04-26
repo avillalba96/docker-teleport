@@ -173,6 +173,7 @@ rm teleport/config/trusted_*
 ### **Instalando tsh personalizado**
 
 * Se deja un script personalizado para uso de *"tsh"* por consola *(esta adaptado para uso personal)*
+* Tambien se encuentra disponible un *autocompletion* para tsh_console, este deben configurar a su gusto en su bash_completion.d
 
 ```bash
 sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
