@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSIONS="3.3"
+VERSIONS="3.6"
 
 # Verificar la existencia de tsh
 if ! command -v tsh >/dev/null 2>&1; then
@@ -29,7 +29,7 @@ if [ $? -eq 0 ]; then
   if awk -v local="$VERSION_LOCAL" -v remote="$VERSION_REMOTE" 'BEGIN { if (local < remote) exit 0; exit 1; }'; then
     # Reemplazar el script actual con el nuevo
     clear
-    echo -e "Se esta actualizando el \e[1;32m[tsh_console]\e[0m a la version \e[0;31m[$VERSION_REMOTE]\e[0m"
+    printf "Se esta actualizando el \e[1;32m[tsh_console]\e[0m a la version \e[0;31m[$VERSION_REMOTE]\e[0m"
     sudo mv $REMOTE_SCRIPT "$LOCAL_SCRIPT"
     sudo chmod +x "$LOCAL_SCRIPT"
     sleep 5
@@ -217,7 +217,7 @@ fi
 kube_name=${kube_names[$((option - 1))]}
 
 # Conectando kube
-export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
+# Config basica kube
 tsh kube login --cluster="$cluster_name" --all
 tsh kube login --cluster="$cluster_name" $kube_name
 }

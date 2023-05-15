@@ -84,7 +84,13 @@ docker exec teleport tctl users add usuario --roles=access,auditor,editor --wind
 * Al tener la conexion establecida, hacemos unas ediciones extras para nuestro nodo:
 
 ```bash
+############################################################################
+## Este script es unicamente para agregar nodo SSH
 sudo bash -c "$(curl -fsSL https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central.sh)"
+############################################################################
+## Este script es unicamente para agregar nodo KUBERNET
+curl -O -fsSL https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/installs/install_central_k8s.sh && chmod +x install_central_k8s.sh && ./install_central_k8s.sh
+############################################################################
 ```
 
 
@@ -176,5 +182,7 @@ rm teleport/config/trusted_*
 * Tambien se encuentra disponible un *autocompletion* para tsh_console, este deben configurar a su gusto en su bash_completion.d
 
 ```bash
+mv ~/.kube/config ~/.kube/config_bkp; rm ~/.kube/config; ln -s ~/teleport-kubeconfig.yaml ~/.kube/config
+export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
 sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
 ```
