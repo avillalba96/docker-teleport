@@ -68,10 +68,11 @@ done
 while ! tsh status > /dev/null 2>&1; do
   # Si el código de salida no es 0, ejecutar "tsh login"
   read -p "Ingrese la dirección del proxy Teleport: " proxy_address
-  tsh login --proxy=$proxy_address > /dev/null 2>&1
-#  tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g' > /tmp/tsh_clusters
-#  tsh status --format=json | jq '.active.logins[]' | sed 's/"//g' > /tmp/tsh_users
-#  tsh ls node --cluster=$cluster_name --format=json | jq '.[].spec.hostname' | sed 's/\"//g' | grep -Ev 'tp.*' > /tmp/tsh_nodes
+  tsh login --proxy=$proxy_address
+  # Esto sirve para el script del autocompletado
+  tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g' > /tmp/tsh_clusters
+  tsh status --format=json | jq '.active.logins[]' | sed 's/"//g' > /tmp/tsh_users
+  tsh ls node --cluster=$cluster_name --format=json | jq '.[].spec.hostname' | sed 's/\"//g' | grep -Ev 'tp.*' > /tmp/tsh_nodes
 done
 
 # Verificar si se proporcionaron los parámetros necesarios
@@ -82,7 +83,7 @@ if [ $# -eq 3 ]; then
   exit
 fi
 
-# Obtener la información de los clústeres que comienzan con "tp.*"
+# Obtener la información de los clústeres
 clusters=$(tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g')
 
 # Crear un array con los nombres de los clústeres
@@ -126,11 +127,9 @@ fi
 node_name=${node_names[$((option - 1))]}
 
 # Obtener el listado de usuarios conectados
-#logins=$(tsh status --format=json | jq '.active.traits.logins[]' | sed 's/"//g')
 logins=$(tsh status --format=json | jq '.active.logins[]' | sed 's/"//g')
 
 # Crear un array con los nombres de los usuarios
-#user_names=($(echo "$logins" | tr ',' '\n' | tr -d ' ' | grep -v 'internal'))
 user_names=($(echo "$logins" | tr ',' '\n' | tr -d ' '))
 
 # Crear una lista con los nombres de los usuarios
@@ -198,28 +197,40 @@ function kube_function() {
 # Obtener la información de los kubes del clúster seleccionado
 kubes=$(tsh kube ls --cluster="$cluster_name" --format=json | jq '.[].kube_cluster_name' | sed 's/"//g')
 
-# Crear un array con los nombres de los kubes
-kube_names=($(echo "$kubes" | tr -d '"' | sort))
+# Verificar si hay kubes disponibles
+kube_count=$(tsh kube ls --cluster="$cluster_name" --format=json | jq '.[].kube_cluster_name' | sed 's/"//g' | wc -l)
 
-# Crear una lista con los nombres de los kubes
-kube_list=""
-for i in "${!kube_names[@]}"; do
-  kube_list+="$((i + 1)) ${kube_names[i]} "
-done
-
-# Mostrar el menú y obtener la opción seleccionada
-option=$(dialog --clear --menu "Selecciona un kube:" 0 0 0 $kube_list 3>&1 1>&2 2>&3)
-if [ -z "$option" ]; then
+# Comprobar si hay kubes disponibles
+if [ "$kube_count" -eq 0 ]; then
+  echo "No hay kubes disponibles. Saliendo del script."
   exit 1
+else
+  # Crear un array con los nombres de los kubes
+  kube_names=($(echo "$kubes" | tr -d '"' | sort))
+
+  # Crear una lista con los nombres de los kubes
+  kube_list=""
+  for i in "${!kube_names[@]}"; do
+    kube_list+="$((i + 1)) ${kube_names[i]} "
+  done
+
+  # Mostrar el menú y obtener la opción seleccionada
+  option=$(dialog --clear --menu "Selecciona un kube:" 0 0 0 $kube_list 3>&1 1>&2 2>&3)
+  if [ -z "$option" ]; then
+    exit 1
+  fi
+
+  # Obtener el nombre del kube seleccionado
+  kube_name=${kube_names[$((option - 1))]}
+
+  # Conectando kube
+  mv ~/.kube/config ~/.kube/config_bkp > /dev/null 2>&1
+  rm ~/.kube/config > /dev/null 2>&1
+  ln -s ~/teleport-kubeconfig.yaml ~/.kube/config > /dev/null 2>&1
+  export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
+  tsh kube login --cluster="$cluster_name" --all
+  tsh kube login --cluster="$cluster_name" $kube_name
 fi
-
-# Obtener el nombre del kube seleccionado
-kube_name=${kube_names[$((option - 1))]}
-
-# Conectando kube
-# Config basica kube
-tsh kube login --cluster="$cluster_name" --all
-tsh kube login --cluster="$cluster_name" $kube_name
 }
 
 # Mostrar pantalla de selección

@@ -93,7 +93,6 @@ curl -O -fsSL https://raw.githubusercontent.com/avillalba96/docker-teleport/main
 ############################################################################
 ```
 
-
 #### **Nodos contra un TELEPORT-CLIENT *(Se usa para conectar contra un teleport local)***
 
 * Generar el token sobre el docker:
@@ -182,7 +181,10 @@ rm teleport/config/trusted_*
 * Tambien se encuentra disponible un *autocompletion* para tsh_console, este deben configurar a su gusto en su bash_completion.d
 
 ```bash
-mv ~/.kube/config ~/.kube/config_bkp; rm ~/.kube/config; ln -s ~/teleport-kubeconfig.yaml ~/.kube/config
-export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
+# Esto es el script personalizado para usar teleport por consola bash
 sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
+
+# Esto es *autocompletion* para tsh_console (NO SE ENCUENTRA ADAPTADO PARA MULTI_CLUSTER, SOLO LEERA EL PRIMER CLUSTER)
+sudo curl -o ~/.tsh_console_autocompletion -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console_autocompletion.sh && sudo chmod +x ~/.tsh_console_autocompletion
+echo "source ~/.tsh_console_autocompletion" >> ~/.zshrc
 ```
