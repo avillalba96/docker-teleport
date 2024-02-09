@@ -224,7 +224,6 @@ else
   kube_name=${kube_names[$((option - 1))]}
 
   # Conectando kube
-  mv ~/.kube/config ~/.kube/config_bkp > /dev/null 2>&1
   rm ~/.kube/config > /dev/null 2>&1
   ln -s ~/teleport-kubeconfig.yaml ~/.kube/config > /dev/null 2>&1
   export KUBECONFIG=${HOME?}/teleport-kubeconfig.yaml
