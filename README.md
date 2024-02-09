@@ -182,6 +182,7 @@ rm teleport/config/trusted_*
 
 ```bash
 # Esto es el script personalizado para usar teleport por consola bash
+curl https://goteleport.com/static/install.sh | bash -s 15.0.1
 sudo curl -o /usr/local/bin/tsh_console -L https://raw.githubusercontent.com/avillalba96/docker-teleport/main/scripts/others/tsh_console.sh && sudo chmod +x /usr/local/bin/tsh_console
 
 # Esto es *autocompletion* para tsh_console (NO SE ENCUENTRA ADAPTADO PARA MULTI_CLUSTER, SOLO LEERA EL PRIMER CLUSTER)
