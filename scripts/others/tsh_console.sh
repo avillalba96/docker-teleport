@@ -72,7 +72,7 @@ while ! tsh status > /dev/null 2>&1; do
   # Esto sirve para el script del autocompletado
   tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g' > /tmp/tsh_clusters
   tsh status --format=json | jq '.active.logins[]' | sed 's/"//g' > /tmp/tsh_users
-  tsh ls node --cluster=$cluster_name --format=json | jq '.[].spec.hostname' | sed 's/\"//g' | grep -Ev 'tp.*' > /tmp/tsh_nodes
+  tsh ls --cluster=$cluster_name --format=json | jq '.[].spec.hostname' | sed 's/\"//g' | grep -Ev 'tp.*' > /tmp/tsh_nodes
 done
 
 # Verificar si se proporcionaron los parámetros necesarios
@@ -106,7 +106,7 @@ cluster_name=${cluster_names[$((option - 1))]}
 
 function ssh_function() {
 # Obtener la información de los nodos del clúster seleccionado
-nodes=$(tsh ls node --cluster="$cluster_name" --format=json | jq '.[].spec.hostname' | sed 's/"//g' | grep -Ev "tp.*")
+nodes=$(tsh ls --cluster="$cluster_name" --format=json | jq '.[].spec.hostname' | sed 's/"//g' | grep -Ev "tp.*")
 
 # Crear un array con los nombres de los nodos
 node_names=($(echo "$nodes" | tr -d '"' | sort))
