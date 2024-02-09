@@ -13,7 +13,7 @@ read -p "Escriba el comando a ejecutar: " command
 # Ejecutando el comando en cada nodo de los clusters
 cluster_name=$(tsh clusters --format=json | jq '.[] | select(.status == "online") | .cluster_name' | sed 's/"//g')
 for cluster in $cluster_name; do
-    nodes_name=$(tsh ls node --cluster="$cluster" --format=json | jq '.[].spec.hostname' | sed 's/"//g' | grep -Ev "tp.*")
+    nodes_name=$(tsh ls --cluster="$cluster" --format=json | jq '.[].spec.hostname' | sed 's/"//g' | grep -Ev "tp.*")
     for node in $nodes_name; do
         echo "--------------------------"
         echo -e "Ejecutando comando sobre el \e[1;32m[$cluster]\e[0m en el nodo \e[0;31m[$node]\e[0m"
